@@ -8,6 +8,8 @@
 
 #include <iostream>
 #include <ECpp3d.h>
+#include <glm/glm.hpp>
+
 #define GLFW_INCLUDE_GL3
 #define GLFW_NO_GLU
 #include <GL/glfw.h>
@@ -62,10 +64,6 @@ void setupGL(){
       vector<Attribute> attributes = program->getActiveAttributeList();
       copy(attributes.begin(),attributes.end(),ostream_iterator<Attribute>(cout, ", "));
       cout << "]" << endl;
-
-      Scalar s = 0.5, b = 10.0;
-      cout << s * b << endl;
-
 
 
     } catch(ECpp3dException & e) {

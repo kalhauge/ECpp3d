@@ -22,6 +22,13 @@ GLchar * getsafestrcopy(const char * code) {
 namespace ECpp3d {
 
 ShaderProgram::ShaderProgram(){
+	program_id = -1;
+	fragment_shader_code = NULL;
+	vertex_shader_code = NULL;
+	fragment_shader_length = 0;
+	vertex_shader_length = 0;
+	vertex_shader_id = -1;
+	fragment_shader_id = -1;
 }
 
 ShaderProgram::ShaderProgram(const char * vertex_shader_code,const char * fragment_shader_code){

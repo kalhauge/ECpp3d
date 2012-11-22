@@ -9,17 +9,16 @@
 #ifndef ecpp3d_ECpp3dShaderProgram_h
 #define ecpp3d_ECpp3dShaderProgram_h
 
-#include "ECpp3d.h"
+#include "ECpp3dUtils.h"
 #include <vector>
+
 namespace ECpp3d {
 
 class ShaderCompileException : public ECpp3dException {
 public:
-    ShaderCompileException(const char * message){setMessage(message);}
-    ~ShaderCompileException() {};
+	ShaderCompileException(const char * message){setMessage(message);}
+	~ShaderCompileException() {};
 };
-
-
 
 class ShaderVariable : public ECpp3dObject {
 protected:
@@ -44,45 +43,52 @@ public:
 };
 
 class ShaderAttachable  {
-	public:
+public:
 	virtual void attachTo(const Uniform & uniform) const = 0;
 };
 
 
 class ShaderProgram : public ECpp3dObject {
-    
-    GLuint vertex_shader_id, fragment_shader_id;
-    GLchar * vertex_shader_code, * fragment_shader_code;
-    GLuint vertex_shader_length, fragment_shader_length;
-    
-    GLuint program_id;
-    
-    static GLuint compileShader(const char *  code,GLint length,GLenum type) throw (ShaderCompileException);
-    static ShaderProgram * used;
-    
-    void ensureUsed();
+
+	GLuint vertex_shader_id, fragment_shader_id;
+	GLchar * vertex_shader_code, * fragment_shader_code;
+	GLuint vertex_shader_length, fragment_shader_length;
+
+	GLuint program_id;
+
+	static GLuint compileShader(const char *  code,GLint length,GLenum type) throw (ShaderCompileException);
+	static ShaderProgram * used;
+
+	void ensureUsed();
 public:
-    ShaderProgram();
-    ShaderProgram(const char * vertex_shader_code, const char * fragment_shader_code);
+	ShaderProgram();
+	ShaderProgram(const char * vertex_shader_code, const char * fragment_shader_code);
 
-    void setVertexShaderCode(const char * vertex_sharder_code);
-    void setFragmentShaderCode(const char * fragment_shader_code);
-    std::vector<Uniform> getActiveUniformList();
-    std::vector<Attribute> getActiveAttributeList();
+	void setVertexShaderCode(const char * vertex_sharder_code);
+	void setFragmentShaderCode(const char * fragment_shader_code);
+	std::vector<Uniform> getActiveUniformList();
+	std::vector<Attribute> getActiveAttributeList();
 
-    inline GLint getProgramInfo(GLenum e) {
-    	GLint result;
-    	glGetProgramiv(program_id,e,&result);
-    	return result;
-    }
+	GLint getProgramInfo(GLenum e) const;
+	GLint getNumberOfActiveUniforms() const;
+	GLint getNumberOfActiveAttributes() const;
 
-    inline GLint getNumberOfActiveUniforms() {return getProgramInfo(GL_ACTIVE_UNIFORMS);}
-    inline GLint getNumberOfActiveAttributes() {return getProgramInfo(GL_ACTIVE_ATTRIBUTES);}
-
-    GLboolean compile() throw (ShaderCompileException);
+	GLboolean compile() throw (ShaderCompileException);
 };
 
+inline GLint ShaderProgram::getProgramInfo(GLenum e) const{
+	GLint result;
+	glGetProgramiv(program_id,e,&result);
+	return result;
+}
 
+inline GLint ShaderProgram::getNumberOfActiveUniforms() const{
+	return getProgramInfo(GL_ACTIVE_UNIFORMS);
+}
+
+inline GLint ShaderProgram::getNumberOfActiveAttributes() const{
+	return getProgramInfo(GL_ACTIVE_ATTRIBUTES);
+}
 
 }
 #endif

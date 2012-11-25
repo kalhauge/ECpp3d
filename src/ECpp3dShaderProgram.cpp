@@ -7,8 +7,9 @@
 //
 
 #include "ECpp3dShaderProgram.h"
-
 #include <string.h>
+#include <glm/gtc/type_ptr.hpp>
+
 
 GLchar * getsafestrcopy(const char * code) {
     size_t length = strlen(code);
@@ -136,6 +137,33 @@ std::vector<Attribute> ShaderProgram::getActiveAttributeList() {
 	return attributes;
 }
 
+
+void ShaderProgram::initialize(bool useStandarts) throw (ShaderCompileException){
+	if(program_id == -1 || getProgramInfo(GL_LINK_STATUS) != GL_TRUE) {
+		throw ShaderCompileException("Can not initialize the program before it is compiled");
+	}
+	try{
+		if(useStandarts) manager.loadStandards();
+		manager.loadVariables(getActiveUniformList(),getActiveAttributeList());
+	}catch(const ShaderVariableException & e) {
+		throw ShaderCompileException(e.getMessage());
+	}
+}
+template<>
+void ShaderProgram::attachUniform<glm::mat4>(const UniformDescription & description, const glm::mat4 & a){
+	ensureUsed();
+	const Uniform u = manager.getUniform(description);
+	assert(u.getType() == GL_FLOAT_MAT4);
+	glUniformMatrix4fv(u.getIndex(),1,GL_FALSE,glm::value_ptr(a));
+}
+
+template<>
+void ShaderProgram::attachUniform<glm::vec4>(const UniformDescription & description, const glm::vec4 & a){
+	ensureUsed();
+	const Uniform u = manager.getUniform(description);
+	assert(u.getType() == GL_FLOAT_VEC4);
+	glUniform4fv(u.getIndex(),1,glm::value_ptr(a));
+}
 
 
 

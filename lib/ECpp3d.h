@@ -9,6 +9,8 @@
 #ifndef ecpp3d_ECpp3d_h
 #define ecpp3d_ECpp3d_h
 
+
+#include <assert.h>
 #include "ECpp3dUtils.h"
 #include "ECpp3dOpenGL.h"
 #include "ECpp3dShaderProgram.h"

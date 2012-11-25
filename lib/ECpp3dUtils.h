@@ -12,6 +12,7 @@
 #include <iostream>
 #include <string>
 #include <sstream>
+#include <vector>
 
 #include "ECpp3dOpenGL.h"
 
@@ -43,6 +44,8 @@ public:
 };
 
 void printspecs(std::ostream & out);
+
+
 }
 
 

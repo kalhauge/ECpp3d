@@ -32,15 +32,14 @@ const char * fragment =
 
 const char * vertex =
   "#version 150\n"
-  "uniform mat4 viewMatrix, projMatrix;"
+  "uniform mat4 mvpMatrix;"
  
-  "in vec4 position;"
+  "in vec4 vPosition;"
  
   "void main()"
   "{"   
-    "gl_Position = projMatrix * viewMatrix * position ;"
+    "gl_Position = mvpMatrix * vPosition + vector ;"
   "}";
-
 
 void setupGL(){
     glClearColor(1.0f, 0.5f, 0.0f, 1.0f);
@@ -52,9 +51,10 @@ void setupGL(){
       program->setFragmentShaderCode(fragment);
       program->setVertexShaderCode(vertex);
       program->compile();
-      program->getVariableManager().loadStandards();
+      program->initialize();
 
       cout << program->getNumberOfActiveUniforms() << endl;
+
 
       cout << "Uniforms [";
       vector<Uniform> uniforms = program->getActiveUniformList();

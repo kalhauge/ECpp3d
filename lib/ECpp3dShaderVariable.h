@@ -12,6 +12,8 @@
 #include <map>
 #include <vector>
 #include <string>
+#include <glm/glm.hpp>
+
 namespace ECpp3d {
 
 class ShaderVariable : public ECpp3dObject {
@@ -105,10 +107,12 @@ protected:
 public:
 	void registerUniform(const UniformDescription & description) throw (ShaderVariableDoesExistException);
 	void registerAttribute(const AttributeDescription & description) throw (ShaderVariableDoesExistException);
-	Uniform & getUniform(int variable_enum) const;
-	Attribute & getAttribute(int variable_enum) const;
+	const Uniform & getUniform(int variable_enum) const;
+	const Attribute & getAttribute(int variable_enum) const;
+	const Uniform & getUniform(const UniformDescription & desc) const;
+	const Attribute & getAttribute(const AttributeDescription & desc) const;
 	void loadStandards();
-	void loadVariables(std::vector<Uniform> uniforms,std::vector<Attribute> attributes);
+	void loadVariables(std::vector<Uniform> uniforms,std::vector<Attribute> attributes) throw (ShaderVariableDoesNotExistException);
 };
 
 

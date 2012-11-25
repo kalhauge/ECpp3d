@@ -74,12 +74,31 @@ void ShaderVariableManager::loadStandards() {
 	registerAttribute(AttributeDescription::NORMAL);
 }
 
-void ShaderVariableManager::loadVariables(std::vector<Uniform> in_uniforms,std::vector<Attribute> in_attributes) {
+const Uniform& ShaderVariableManager::getUniform(int variable_enum) const {
+	return uniforms.find(variable_enum)->second;
+}
+
+const Attribute& ShaderVariableManager::getAttribute(int variable_enum) const {
+	return attributes.find(variable_enum)->second;
+}
+
+const Uniform& ShaderVariableManager::getUniform(
+		const UniformDescription& desc) const {
+	return getUniform(desc.getId());
+}
+
+const Attribute& ShaderVariableManager::getAttribute(
+		const AttributeDescription& desc) const {
+	return getAttribute(desc.getId());
+}
+
+void ShaderVariableManager::loadVariables(std::vector<Uniform> in_uniforms,std::vector<Attribute> in_attributes) throw (ShaderVariableDoesNotExistException) {
 
 	for(std::vector<Uniform>::iterator u = in_uniforms.begin();
 		u != in_uniforms.end();
 		++u) {
 		uniform_desc_map::iterator i = uniform_ids.find(u->getName());
+		if(i == uniform_ids.end()) throw ShaderVariableDoesNotExistException(u->getName());
 		uniforms.insert(std::pair<int,Uniform>(i->second.getId(),*u));
 	}
 
@@ -87,9 +106,11 @@ void ShaderVariableManager::loadVariables(std::vector<Uniform> in_uniforms,std::
 		a != in_attributes.end();
 		++a) {
 		attribute_desc_map::iterator i = attribute_ids.find(a->getName());
+		if(i == attribute_ids.end()) throw ShaderVariableDoesNotExistException(a->getName());
 		attributes.insert(std::pair<int,Attribute>(i->second.getId(),*a));
 	}
 }
+
 
 static int uniform_counter = 0;
 static int attribute_counter = 0;

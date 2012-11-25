@@ -12,14 +12,16 @@
 #include "ECpp3dUtils.h"
 #include "ECpp3dShaderVariable.h"
 #include <vector>
+#include <string>
 
 namespace ECpp3d {
 
 class ShaderCompileException : public ECpp3dException {
 public:
-	ShaderCompileException(const char * message){setMessage(message);}
+	ShaderCompileException(const std::string & message){setMessage(message);}
 	~ShaderCompileException() {};
 };
+
 
 class ShaderProgram : public ECpp3dObject {
 	ShaderVariableManager manager;
@@ -48,6 +50,12 @@ public:
 	GLint getNumberOfActiveAttributes() const;
 
 	ShaderVariableManager & getVariableManager() {return manager;};
+
+	void initialize(bool useStandards = true) throw (ShaderCompileException);
+
+	template<typename type>
+	void attachUniform(const UniformDescription & description, const type & a);
+
 
 	GLboolean compile() throw (ShaderCompileException);
 };

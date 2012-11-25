@@ -52,6 +52,7 @@ void setupGL(){
       program->setFragmentShaderCode(fragment);
       program->setVertexShaderCode(vertex);
       program->compile();
+      program->getVariableManager().loadStandards();
 
       cout << program->getNumberOfActiveUniforms() << endl;
 

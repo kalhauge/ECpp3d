@@ -10,6 +10,7 @@
 #define ecpp3d_ECpp3dShaderProgram_h
 
 #include "ECpp3dUtils.h"
+#include "ECpp3dShaderVariable.h"
 #include <vector>
 
 namespace ECpp3d {
@@ -20,35 +21,8 @@ public:
 	~ShaderCompileException() {};
 };
 
-class ShaderVariable : public ECpp3dObject {
-protected:
-	std::string name;
-	GLenum type;
-	GLuint index;
-	GLint size;
-public:
-	inline GLuint getIndex() const {return index;}
-};
-
-class Uniform : public ShaderVariable {
-public:
-	Uniform(GLuint program_id,GLuint index);
-	virtual const std::string toString() const;
-};
-
-class Attribute : public ShaderVariable {
-public:
-	Attribute(GLuint program_id,GLuint index);
-	virtual const std::string toString() const;
-};
-
-class ShaderAttachable  {
-public:
-	virtual void attachTo(const Uniform & uniform) const = 0;
-};
-
-
 class ShaderProgram : public ECpp3dObject {
+	ShaderVariableManager manager;
 
 	GLuint vertex_shader_id, fragment_shader_id;
 	GLchar * vertex_shader_code, * fragment_shader_code;
@@ -72,6 +46,8 @@ public:
 	GLint getProgramInfo(GLenum e) const;
 	GLint getNumberOfActiveUniforms() const;
 	GLint getNumberOfActiveAttributes() const;
+
+	ShaderVariableManager & getVariableManager() {return manager;};
 
 	GLboolean compile() throw (ShaderCompileException);
 };

@@ -34,7 +34,7 @@ class ECpp3dException : public ECpp3dObject {
 public:
     ~ECpp3dException() {}
 
-    virtual void setMessage(const char * message){
+    virtual void setMessage(const std::string & message){
     	this->message = std::string(message);
     }
 

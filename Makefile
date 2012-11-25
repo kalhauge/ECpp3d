@@ -7,7 +7,7 @@ FRAMEWORKS= -framework OpenGL -framework IOKit -framework Cocoa
 LIBS= -L"/opt/X11/lib" -L"/usr/local/lib" -lecpp3d -lGLFW -L. $(FRAMEWORKS)
 HEADERS = -I"/opt/X11/include" -I"/usr/local/include" -Ilib/
 
-NAMES=ECpp3dShaderProgram.cpp ECpp3dUtils.cpp ECpp3dEntity.cpp
+NAMES=ECpp3dShaderProgram.cpp ECpp3dUtils.cpp ECpp3dEntity.cpp ECpp3dShaderVariable.cpp
 OBJ_DIR=obj
 SRC_DIR=src
 SRC=$(addprefix $(OBJ_DIR)/,$(NAMES))

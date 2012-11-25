@@ -125,6 +125,7 @@ std::vector<Uniform> ShaderProgram::getActiveUniformList() {
 	}
 	return uniforms;
 }
+
 std::vector<Attribute> ShaderProgram::getActiveAttributeList() {
 	GLint length = getNumberOfActiveAttributes();
 	std::vector<Attribute> attributes;
@@ -135,35 +136,8 @@ std::vector<Attribute> ShaderProgram::getActiveAttributeList() {
 	return attributes;
 }
 
-Uniform::Uniform(GLuint program_id,GLuint index) {
-	char * buffer = new char[128];
-	GLsizei length = 0;
-	glGetActiveUniform(program_id,index,128,&length,&size,&type,buffer);
-	this->index = index;
-	name = std::string(buffer,length);
-	delete[] buffer;
-}
-const std::string Uniform::toString() const {
-	std::stringstream s;
-	s << "<Uniform " << name << " at [" << index << "]>";
-	return s.str();
-}
 
-Attribute::Attribute(GLuint program_id,GLuint index) {
-	char * buffer = new char[128];
-	GLsizei length = 0;
-	glGetActiveAttrib(program_id,index,128,&length,&size,&type,buffer);
-	name = std::string(buffer,length);
-	this->index = index;
-	delete[] buffer;
 
-}
-
-const std::string Attribute::toString() const {
-	std::stringstream s;
-	s << "<Attribute " << name << " at [" << index << "]>";
-	return s.str();
-}
 
 }
 

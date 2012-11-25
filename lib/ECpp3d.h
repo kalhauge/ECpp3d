@@ -12,5 +12,4 @@
 #include "ECpp3dUtils.h"
 #include "ECpp3dOpenGL.h"
 #include "ECpp3dShaderProgram.h"
-#include "math/ECpp3dMath.h"
 #endif

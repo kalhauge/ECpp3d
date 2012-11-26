@@ -1,7 +1,7 @@
 # Makefile for ECpp3d.
 
 CXX=g++
-CXXFLAGS= 
+CXXFLAGS= -g
 
 FRAMEWORKS= -framework OpenGL -framework IOKit -framework Cocoa
 LIBS= -L"/opt/X11/lib" -L"/usr/local/lib" -lecpp3d -lGLFW -L. $(FRAMEWORKS)

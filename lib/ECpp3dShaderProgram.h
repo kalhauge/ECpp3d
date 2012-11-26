@@ -11,6 +11,7 @@
 
 #include "ECpp3dUtils.h"
 #include "ECpp3dShaderVariable.h"
+#include "ECpp3dVertexAttributeArray.h"
 #include <vector>
 #include <string>
 
@@ -33,9 +34,9 @@ class ShaderProgram : public ECpp3dObject {
 	GLuint program_id;
 
 	static GLuint compileShader(const char *  code,GLint length,GLenum type) throw (ShaderCompileException);
-	static ShaderProgram * used;
+	const static ShaderProgram * used;
 
-	void ensureUsed();
+
 public:
 	ShaderProgram();
 	ShaderProgram(const char * vertex_shader_code, const char * fragment_shader_code);
@@ -54,8 +55,11 @@ public:
 	void initialize(bool useStandards = true) throw (ShaderCompileException);
 
 	template<typename type>
-	void attachUniform(const UniformDescription & description, const type & a);
+	void attachUniform(const UniformDescription & description, const type & a) const;
 
+	void attachAttribute(const AttributeDescription & description, const VertexAttributeArray & array) const;
+
+	void ensureUsed() const;
 
 	GLboolean compile() throw (ShaderCompileException);
 };

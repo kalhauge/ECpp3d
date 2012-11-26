@@ -18,20 +18,17 @@ protected:
 	GLint size;
 	GLint number_of_vertices;
 	GLfloat * data;
+
+	void init(int vector_size,int size);
+
 public:
 	~VertexAttributeArray();
-	VertexAttributeArray(int vector_size,int size);
 	VertexAttributeArray(const std::vector<glm::vec4> & vertices);
 	VertexAttributeArray(const std::vector<glm::vec3> & vertices);
 	VertexAttributeArray(const std::vector<glm::vec2> & vertices);
 	VertexAttributeArray(const std::vector<GLfloat> & vertices);
 
-
-	void put(int i,const glm::vec4 & data);
-	void put(int i,const glm::vec3 & data);
-	void put(int i,const glm::vec2 & data);
-	void put(int i,const GLfloat & data);
-
+	void setup();
 	void attach(int pos) const;
 };
 

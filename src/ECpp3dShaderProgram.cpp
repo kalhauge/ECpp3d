@@ -47,6 +47,9 @@ GLboolean ShaderProgram::compile() throw (ShaderCompileException){
     
     glAttachShader(program_id, vertex_shader_id);
     glAttachShader(program_id, fragment_shader_id);
+
+    glBindFragDataLocation(program_id,0,"fragColor");
+
     glLinkProgram(program_id);
     
     
@@ -98,7 +101,7 @@ GLuint ShaderProgram::compileShader(const GLchar * code,const GLint length,const
     return loc;
 }
 
-ShaderProgram * ShaderProgram::used = NULL;
+const ShaderProgram * ShaderProgram::used = NULL;
 
 void ShaderProgram::setVertexShaderCode(const char *vertex_shader_code){
     this->vertex_shader_length = (GLuint) strlen(vertex_shader_code);
@@ -110,7 +113,7 @@ void ShaderProgram::setFragmentShaderCode(const char *fragment_shader_code){
     this->fragment_shader_code = getsafestrcopy(fragment_shader_code);
 }
 
-void ShaderProgram::ensureUsed() {
+void ShaderProgram::ensureUsed() const{
 	if(used != this) {
 		used = this;
 		glUseProgram(program_id);
@@ -149,8 +152,16 @@ void ShaderProgram::initialize(bool useStandarts) throw (ShaderCompileException)
 		throw ShaderCompileException(e.getMessage());
 	}
 }
+
+void ShaderProgram::attachAttribute(const AttributeDescription & description, const VertexAttributeArray & array) const{
+	ensureUsed();
+	const Attribute a = manager.getAttribute(description);
+	array.attach(a.getIndex());
+}
+
+
 template<>
-void ShaderProgram::attachUniform<glm::mat4>(const UniformDescription & description, const glm::mat4 & a){
+void ShaderProgram::attachUniform<glm::mat4>(const UniformDescription & description, const glm::mat4 & a) const{
 	ensureUsed();
 	const Uniform u = manager.getUniform(description);
 	assert(u.getType() == GL_FLOAT_MAT4);
@@ -158,7 +169,7 @@ void ShaderProgram::attachUniform<glm::mat4>(const UniformDescription & descript
 }
 
 template<>
-void ShaderProgram::attachUniform<glm::vec4>(const UniformDescription & description, const glm::vec4 & a){
+void ShaderProgram::attachUniform<glm::vec4>(const UniformDescription & description, const glm::vec4 & a) const{
 	ensureUsed();
 	const Uniform u = manager.getUniform(description);
 	assert(u.getType() == GL_FLOAT_VEC4);

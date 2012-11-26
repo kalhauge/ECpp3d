@@ -38,14 +38,26 @@ const char * vertex =
  
   "void main()"
   "{"   
-    "gl_Position = mvpMatrix * vPosition + vector ;"
+    "gl_Position = mvpMatrix * vPosition;"
   "}";
+
+static const glm::vec2 pos[] = {
+		glm::vec2(-0.5f,-0.5f),
+		glm::vec2(0,0.5f),
+		glm::vec2(0.5f,-0.5f)};
+
+
+VertexAttributeArray * positions;
 
 void setupGL(){
     glClearColor(1.0f, 0.5f, 0.0f, 1.0f);
 
     printspecs(cout);
 
+    positions = new VertexAttributeArray(
+		std::vector<glm::vec2>(pos,pos + 3));
+
+    positions->setup();
     try {
       program = new ShaderProgram();
       program->setFragmentShaderCode(fragment);
@@ -55,6 +67,8 @@ void setupGL(){
 
       cout << program->getNumberOfActiveUniforms() << endl;
 
+      program->attachUniform(UniformDescription::MVP_MATRIX,glm::mat4());
+      program->attachAttribute(AttributeDescription::POSITION,*positions);
 
       cout << "Uniforms [";
       vector<Uniform> uniforms = program->getActiveUniformList();
@@ -94,6 +108,8 @@ int main(int argc, char ** argv)
     	f[0] = i; f[1] = i; f[2] = i-1;
     	glClearColor(f[0],f[1],f[2],f[3]);
     	glClear(GL_COLOR_BUFFER_BIT);
+    	program->ensureUsed();
+    	glDrawArrays(GL_TRIANGLES,0,3);
 
     	glfwSwapBuffers();
     }

@@ -69,6 +69,7 @@ void ShaderVariableManager::registerAttribute(const AttributeDescription & desc)
 void ShaderVariableManager::loadStandards() {
 	registerUniform(UniformDescription::MVP_MATRIX);
 	registerUniform(UniformDescription::MV_MATRIX);
+	registerUniform(UniformDescription::COLOR);
 	registerAttribute(AttributeDescription::POSITION);
 	registerAttribute(AttributeDescription::COLOR);
 	registerAttribute(AttributeDescription::NORMAL);
@@ -171,6 +172,7 @@ const std::string AttributeDescription::toString() const {
 
 UniformDescription UniformDescription::MVP_MATRIX = UniformDescription("mvpMatrix");
 UniformDescription UniformDescription::MV_MATRIX = UniformDescription("mvMatrix");
+UniformDescription UniformDescription::COLOR = UniformDescription("uColor");
 
 AttributeDescription AttributeDescription::POSITION = AttributeDescription("vPosition");
 AttributeDescription AttributeDescription::COLOR = AttributeDescription("vColor");

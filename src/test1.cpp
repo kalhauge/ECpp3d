@@ -24,9 +24,10 @@ ShaderProgram * program;
 const char * fragment = 
   "#version 150\n" 
   "out vec4 fragColor;"
+  "uniform vec4 uColor;"
   "void main(void)"
   "{"
-  "    fragColor = vec4(1.0, 0.0, 0.0, 1.0);"
+  "    fragColor = uColor;"
   "}";
 
 
@@ -41,23 +42,19 @@ const char * vertex =
     "gl_Position = mvpMatrix * vPosition;"
   "}";
 
-static const glm::vec2 pos[] = {
-		glm::vec2(-0.5f,-0.5f),
-		glm::vec2(0,0.5f),
-		glm::vec2(0.5f,-0.5f)};
+static const GLfloat pos[] = {-0.5f,-0.5f,0,0.5f,0.5f,-0.5f};
 
 
-VertexAttributeArray * positions;
+VertexAttributeArray positions;
 
 void setupGL(){
     glClearColor(1.0f, 0.5f, 0.0f, 1.0f);
 
     printspecs(cout);
 
-    positions = new VertexAttributeArray(
-		std::vector<glm::vec2>(pos,pos + 3));
+    positions = VertexAttributeArray::generateVertexArray();
+    positions.initialize(2,3,pos);
 
-    positions->setup();
     try {
       program = new ShaderProgram();
       program->setFragmentShaderCode(fragment);
@@ -68,7 +65,9 @@ void setupGL(){
       cout << program->getNumberOfActiveUniforms() << endl;
 
       program->attachUniform(UniformDescription::MVP_MATRIX,glm::mat4());
-      program->attachAttribute(AttributeDescription::POSITION,*positions);
+      program->attachUniform(UniformDescription::COLOR,glm::vec4(1.0f,0.5f,0.2f,1.0f));
+
+      program->attachAttribute(AttributeDescription::POSITION,positions);
 
       cout << "Uniforms [";
       vector<Uniform> uniforms = program->getActiveUniformList();

@@ -9,26 +9,32 @@
 #define ECPP3DVERTEXATTRIBUTEARRAY_H_
 
 #include "ECpp3dUtils.h";
+#include "ECpp3dBuffer.h"
 #include <vector>
 #include <glm/glm.hpp>
 namespace ECpp3d{
 
-class VertexAttributeArray : public ECpp3dObject {
+class VertexAttributeArray : public ECpp3dMemoryObject {
 protected:
-	GLint size;
+	GLuint location;
+	GLsizei vert_size;
 	GLint number_of_vertices;
-	GLfloat * data;
-
-	void init(int vector_size,int size);
-
+	ArrayBuffer buffer;
+	static const VertexAttributeArray * bound;
+	void ensureBound() const;
 public:
-	~VertexAttributeArray();
-	VertexAttributeArray(const std::vector<glm::vec4> & vertices);
-	VertexAttributeArray(const std::vector<glm::vec3> & vertices);
-	VertexAttributeArray(const std::vector<glm::vec2> & vertices);
-	VertexAttributeArray(const std::vector<GLfloat> & vertices);
 
-	void setup();
+	static std::vector<VertexAttributeArray> generateVertexArrays(GLsizei size);
+	static VertexAttributeArray generateVertexArray();
+
+	~VertexAttributeArray();
+	VertexAttributeArray();
+	VertexAttributeArray(const ArrayBuffer & buffer,GLuint location);
+
+	void initialize(int vector_size,int size);
+	void initialize(int vector_size,int size,const GLfloat * data);
+
+	void finalize();
 	void attach(int pos) const;
 };
 

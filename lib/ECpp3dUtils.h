@@ -30,6 +30,11 @@ class ECpp3dObject {
 	}
 };
 
+class ECpp3dMemoryObject : public ECpp3dObject {
+public:
+	virtual void finalize() = 0;
+};
+
 class ECpp3dException : public ECpp3dObject {
 	std::string message;
 public:
@@ -41,6 +46,12 @@ public:
 
     virtual const std::string getMessage() const {return message;}
     const std::string toString() const {return getMessage();}
+};
+
+class ECpp3dNotInitializedException : public ECpp3dException {
+	const std::string getMessage() const {
+		return "<ECpp3dNotInitializedException>";
+	}
 };
 
 void printspecs(std::ostream & out);

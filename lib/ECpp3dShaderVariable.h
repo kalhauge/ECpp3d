@@ -16,7 +16,7 @@
 
 namespace ECpp3d {
 
-class ShaderVariable : public ECpp3dObject {
+class ShaderVariable : public Object {
 protected:
 	std::string name;
 	GLenum type;
@@ -42,7 +42,7 @@ public:
 };
 
 
-class VariableDescription : public ECpp3dObject {
+class VariableDescription : public Object {
 protected:
 	int id;
 	std::string name;
@@ -77,7 +77,7 @@ public:
 };
 
 
-class ShaderVariableException : public ECpp3dException {
+class ShaderVariableException : public Exception {
 
 };
 
@@ -91,7 +91,7 @@ public:
 	ShaderVariableDoesNotExistException(const std::string & name);
 };
 
-class ShaderVariableManager : public ECpp3dObject {
+class ShaderVariableManager : public Object {
 
 protected:
 	typedef std::map<const std::string, const UniformDescription> uniform_desc_map;

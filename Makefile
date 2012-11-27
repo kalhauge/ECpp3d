@@ -8,7 +8,7 @@ LIBS= -L"/opt/X11/lib" -L"/usr/local/lib" -lecpp3d -lGLFW -L. $(FRAMEWORKS)
 HEADERS = -I"/opt/X11/include" -I"/usr/local/include" -Ilib/
 
 NAMES=ECpp3dShaderProgram.cpp ECpp3dUtils.cpp ECpp3dEntity.cpp ECpp3dShaderVariable.cpp \
-ECpp3dVertexAttributeArray.cpp ECpp3dBuffer.cpp
+ECpp3dVertexArray.cpp ECpp3dBuffer.cpp
 OBJ_DIR=obj
 SRC_DIR=src
 SRC=$(addprefix $(OBJ_DIR)/,$(NAMES))

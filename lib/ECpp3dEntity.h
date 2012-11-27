@@ -14,7 +14,7 @@
 #include <vector>
 namespace ECpp3d{
 
-class Entity : public ECpp3dObject {
+class Entity : public Object {
 // Important matrices
 	glm::mat4 modelMatrix;
 	glm::mat4 mvpMatrix;

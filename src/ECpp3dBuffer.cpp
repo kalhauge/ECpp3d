@@ -29,15 +29,37 @@ Buffer Buffer::generateBuffer(){
 
 Buffer::Buffer() {
 	this->location = -1;
+	this->size = 0;
+	this->usage = 0;
 }
 
 Buffer::Buffer(GLuint location) {
 	this->location = location;
+	this->size = 0;
+	this->usage = 0;
 }
 
-void Buffer::initialize(GLenum target, const GLvoid * data,GLsizei size, GLenum hint) {
+void Buffer::initialize(GLenum target, const GLvoid * data,GLsizei size, GLenum usage) {
 	this->size = size;
-	glBufferData(target,size,data,hint);
+	this->usage = usage;
+	glBufferData(target,size,data,usage);
+}
+
+GLint Buffer::getServerInfo(GLenum e) const{
+	GLint result;
+	glGetBufferParameteriv(location,e,&result);
+	return result;
+}
+
+void Buffer::validate() const throw (OpenGLException) {
+	GLint value = getServerInfo(GL_BUFFER_SIZE);
+	if(size != value)
+		throw OpenGLInconsistentStateException(this,"size",(GLint) size, value);
+
+	value = getServerInfo(GL_BUFFER_USAGE);
+	if(usage != value)
+		throw OpenGLInconsistentStateException(this,"usage",(GLint) usage,value);
+
 }
 
 void Buffer::finalize() {
@@ -55,6 +77,8 @@ ArrayBuffer::ArrayBuffer(const Buffer & buffer) {
 ArrayBuffer::ArrayBuffer() {
 	this->location = -1;
 }
+
+
 
 void ArrayBuffer::initialize(const GLvoid * data,GLsizei size,GLenum hint){
 	ensureBound();

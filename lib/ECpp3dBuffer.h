@@ -13,10 +13,11 @@
 
 namespace ECpp3d {
 
-class Buffer : public ECpp3dMemoryObject {
+class Buffer : public OpenGLHandler {
 protected:
 	GLuint location;
 	GLsizei size;
+	GLenum usage;
 	void setData(GLenum target, GLintptr at, const GLvoid * data, GLsizei size);
 public:
 	static std::vector<Buffer> generateBuffers(GLsizei number);
@@ -25,8 +26,11 @@ public:
 	Buffer();
 	Buffer(GLuint location);
 
-	void initialize(GLenum target, const GLvoid * data,GLsizei size, GLenum hint);
+	void initialize(GLenum target, const GLvoid * data,GLsizei size, GLenum usage);
 	void finalize();
+	void validate() const throw (OpenGLException);
+
+	GLint getServerInfo(GLenum e) const;
 
 	GLuint getLocation() const {return location;}
 };

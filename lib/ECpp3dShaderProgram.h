@@ -11,20 +11,20 @@
 
 #include "ECpp3dUtils.h"
 #include "ECpp3dShaderVariable.h"
-#include "ECpp3dVertexAttributeArray.h"
+#include "ECpp3dVertexArray.h"
 #include <vector>
 #include <string>
 
 namespace ECpp3d {
 
-class ShaderCompileException : public ECpp3dException {
+class ShaderCompileException : public Exception {
 public:
 	ShaderCompileException(const std::string & message){setMessage(message);}
 	~ShaderCompileException() {};
 };
 
 
-class ShaderProgram : public ECpp3dObject {
+class ShaderProgram : public Object {
 	ShaderVariableManager manager;
 
 	GLuint vertex_shader_id, fragment_shader_id;
@@ -57,7 +57,7 @@ public:
 	template<typename type>
 	void attachUniform(const UniformDescription & description, const type & a) const;
 
-	void attachAttribute(const AttributeDescription & description, const VertexAttributeArray & array) const;
+	void attachAttribute(const AttributeDescription & description, const VertexArray & array) const;
 
 	void ensureUsed() const;
 

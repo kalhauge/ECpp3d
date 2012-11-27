@@ -16,7 +16,7 @@
 				</extensions>
 			</storageModule>
 			<storageModule moduleId="cdtBuildSystem" version="4.0.0">
-				<configuration buildProperties="" description="" id="cdt.managedbuild.toolchain.gnu.macosx.base.1281711115" name="Default" parent="org.eclipse.cdt.build.core.emptycfg">
+				<configuration artifactName="ECpp3d" buildProperties="" description="" id="cdt.managedbuild.toolchain.gnu.macosx.base.1281711115" name="Default" parent="org.eclipse.cdt.build.core.emptycfg">
 					<folderInfo id="cdt.managedbuild.toolchain.gnu.macosx.base.1281711115.1540251121" name="/" resourcePath="">
 						<toolChain id="cdt.managedbuild.toolchain.gnu.macosx.base.1868614179" name="cdt.managedbuild.toolchain.gnu.macosx.base" superClass="cdt.managedbuild.toolchain.gnu.macosx.base">
 							<targetPlatform archList="all" binaryParser="org.eclipse.cdt.core.MachO64" id="cdt.managedbuild.target.gnu.platform.macosx.base.596533348" name="Debug Platform" osList="macosx" superClass="cdt.managedbuild.target.gnu.platform.macosx.base"/>
@@ -58,7 +58,11 @@
 		<project id="ECpp3d.null.1956483786" name="ECpp3d"/>
 	</storageModule>
 	<storageModule moduleId="org.eclipse.cdt.core.LanguageSettingsProviders"/>
-	<storageModule moduleId="refreshScope"/>
+	<storageModule moduleId="refreshScope" versionNumber="2">
+		<configuration configurationName="Default">
+			<resource resourceType="PROJECT" workspacePath="/ECpp3d"/>
+		</configuration>
+	</storageModule>
 	<storageModule moduleId="scannerConfiguration">
 		<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
 		<scannerConfigBuildInfo instanceId="cdt.managedbuild.toolchain.gnu.macosx.base.1281711115;cdt.managedbuild.toolchain.gnu.macosx.base.1281711115.1540251121;cdt.managedbuild.tool.gnu.c.compiler.macosx.base.993401406;cdt.managedbuild.tool.gnu.c.compiler.input.1363702589">

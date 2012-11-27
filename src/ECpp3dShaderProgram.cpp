@@ -153,7 +153,7 @@ void ShaderProgram::initialize(bool useStandarts) throw (ShaderCompileException)
 	}
 }
 
-void ShaderProgram::attachAttribute(const AttributeDescription & description, const VertexAttributeArray & array) const{
+void ShaderProgram::attachAttribute(const AttributeDescription & description, const VertexArray & array) const{
 	ensureUsed();
 	const Attribute a = manager.getAttribute(description);
 	array.attach(a.getIndex());

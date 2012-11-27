@@ -45,14 +45,14 @@ const char * vertex =
 static const GLfloat pos[] = {-0.5f,-0.5f,0,0.5f,0.5f,-0.5f};
 
 
-VertexAttributeArray positions;
+VertexArray positions;
 
 void setupGL(){
     glClearColor(1.0f, 0.5f, 0.0f, 1.0f);
 
     printspecs(cout);
 
-    positions = VertexAttributeArray::generateVertexArray();
+    positions = VertexArray::generateVertexArray();
     positions.initialize(2,3,pos);
 
     try {
@@ -80,7 +80,7 @@ void setupGL(){
       cout << "]" << endl;
 
 
-    } catch(ECpp3dException & e) {
+    } catch(Exception & e) {
       cerr << e << endl;
     }
 }

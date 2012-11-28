@@ -142,7 +142,7 @@ std::vector<Attribute> ShaderProgram::getActiveAttributeList() {
 
 
 void ShaderProgram::initialize(bool useStandarts) throw (ShaderCompileException){
-	if(program_id == -1 || getProgramInfo(GL_LINK_STATUS) != GL_TRUE) {
+	if(program_id == -1 || getServerInfo(GL_LINK_STATUS) != GL_TRUE) {
 		throw ShaderCompileException("Can not initialize the program before it is compiled");
 	}
 	try{

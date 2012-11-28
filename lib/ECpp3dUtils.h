@@ -39,6 +39,9 @@ class Object {
 	}
 };
 
+
+
+
 class Exception : public Object {
 	std::string message;
 public:
@@ -60,10 +63,13 @@ public:
 	const std::string getMessage() const;
 };
 
+
 class OpenGLException : public Exception {};
+
 class OpenGLOutOfMemmoryException : public OpenGLException {
 public:	const std::string getMessage() const;
 };
+
 class OpenGLInvalidOperationException : public OpenGLException {
 public: const std::string getMessage() const;
 };
@@ -81,20 +87,19 @@ public:
 			GLint server);
 	const std::string getMessage() const;
 };
-
-
 class OpenGLHandler : public Object {
 public:
 	virtual void finalize() = 0;
 	virtual void validate() const throw (OpenGLException)= 0;
 };
 
-
-void printspecs(std::ostream & out);
+class OpenGLContext {
+public:
+	static void printspecs(std::ostream & out);
+	static void checkForErrors() throw (OpenGLException);
+};
 
 
 }
-
-
 
 #endif /* ECPP3DUTILS_H_ */

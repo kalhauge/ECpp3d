@@ -9,7 +9,7 @@
 
 namespace ECpp3d {
 
-const ArrayBuffer * ArrayBuffer::bound = NULL;
+GLuint ArrayBuffer::bound = NULL;
 
 std::vector<Buffer> Buffer::generateBuffers(GLsizei number){
 	GLuint locations[number];
@@ -91,8 +91,8 @@ void ArrayBuffer::setData(GLintptr at, const GLvoid * data, GLsizei size) {
 }
 
 void ArrayBuffer::ensureBound() const{
-	if(bound != this) {
-		bound == this;
+	if(bound != location) {
+		bound == location;
 		glBindBuffer(GL_ARRAY_BUFFER,location);
 	}
 }

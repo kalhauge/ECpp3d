@@ -50,7 +50,7 @@ VertexArray positions;
 void setupGL(){
     glClearColor(1.0f, 0.5f, 0.0f, 1.0f);
 
-    printspecs(cout);
+    OpenGLContext::printspecs(cout);
 
     positions = VertexArray::generateVertexArray();
     positions.initialize(2,3,pos);
@@ -79,7 +79,7 @@ void setupGL(){
       copy(attributes.begin(),attributes.end(),ostream_iterator<Attribute>(cout, ", "));
       cout << "]" << endl;
 
-
+      OpenGLContext::checkForErrors();
     } catch(Exception & e) {
       cerr << e << endl;
     }

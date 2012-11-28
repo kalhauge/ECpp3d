@@ -9,6 +9,9 @@
 
 namespace ECpp3d {
 
+GLuint VertexArray::bound = 0;
+
+
 std::vector<VertexArray> VertexArray::generateVertexArrays(GLsizei size) {
 	GLuint locations[size];
 	glGenVertexArrays(size,locations);
@@ -45,11 +48,10 @@ VertexArray::VertexArray(const ArrayBuffer & buffer,GLuint location) {
 	number_of_vertices = 0;
 }
 
-const VertexArray * VertexArray::bound = NULL;
 
 void VertexArray::ensureBound() const{
-	if(bound != this) {
-		bound = this;
+	if(bound != location) {
+		bound == location;
 		glBindVertexArray(location);
 	}
 }

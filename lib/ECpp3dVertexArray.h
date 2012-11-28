@@ -20,7 +20,7 @@ protected:
 	GLsizei vert_size;
 	GLint number_of_vertices;
 	ArrayBuffer buffer;
-	static const VertexArray * bound;
+	static GLuint bound;
 	void ensureBound() const;
 public:
 

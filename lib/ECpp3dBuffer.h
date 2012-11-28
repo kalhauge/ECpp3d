@@ -36,11 +36,11 @@ public:
 };
 
 class ArrayBuffer : public Buffer {
-	static const ArrayBuffer * bound;
+	static GLuint bound;
+	void ensureBound() const;
 public:
 	ArrayBuffer();
 	ArrayBuffer(const Buffer & buffer);
-	void ensureBound() const;
 	void initialize(const GLvoid * data,GLsizei size,GLenum hint);
 	void setData(GLintptr at, const GLvoid * data, GLsizei size);
 };

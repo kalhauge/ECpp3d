@@ -46,7 +46,7 @@ public:
 	std::vector<Uniform> getActiveUniformList();
 	std::vector<Attribute> getActiveAttributeList();
 
-	GLint getProgramInfo(GLenum e) const;
+	GLint getServerInfo(GLenum e) const;
 	GLint getNumberOfActiveUniforms() const;
 	GLint getNumberOfActiveAttributes() const;
 
@@ -64,18 +64,18 @@ public:
 	GLboolean compile() throw (ShaderCompileException);
 };
 
-inline GLint ShaderProgram::getProgramInfo(GLenum e) const{
+inline GLint ShaderProgram::getServerInfo(GLenum e) const{
 	GLint result;
 	glGetProgramiv(program_id,e,&result);
 	return result;
 }
 
 inline GLint ShaderProgram::getNumberOfActiveUniforms() const{
-	return getProgramInfo(GL_ACTIVE_UNIFORMS);
+	return getServerInfo(GL_ACTIVE_UNIFORMS);
 }
 
 inline GLint ShaderProgram::getNumberOfActiveAttributes() const{
-	return getProgramInfo(GL_ACTIVE_ATTRIBUTES);
+	return getServerInfo(GL_ACTIVE_ATTRIBUTES);
 }
 
 }

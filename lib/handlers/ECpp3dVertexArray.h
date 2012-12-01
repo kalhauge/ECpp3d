@@ -9,27 +9,34 @@
 #define ECPP3DVERTEXARRAY_H_
 
 #include "ECpp3dUtils.h";
-#include "ECpp3dBuffer.h"
+#include "handlers/ECpp3dBuffer.h"
 #include <vector>
 #include <glm/glm.hpp>
 namespace ECpp3d{
 
+class VertexArray;
+
+typedef std::vector<VertexArray*> VertexArrays;
+
 class VertexArray : public OpenGLHandler {
 protected:
-	GLuint location;
+	const GLuint location;
 	GLsizei vert_size;
 	GLint number_of_vertices;
-	ArrayBuffer buffer;
-	static GLuint bound;
+	ArrayBuffer & buffer;
+	static const VertexArray * bound;
 	void ensureBound() const;
 public:
 
-	static std::vector<VertexArray> generateVertexArrays(GLsizei size);
-	static VertexArray generateVertexArray();
+	static VertexArrays generateVertexArrays(GLsizei size);
+	static VertexArray * generateVertexArray();
 
-	~VertexArray();
-	VertexArray();
-	VertexArray(const ArrayBuffer & buffer,GLuint location);
+	virtual ~VertexArray();
+	VertexArray(ArrayBuffer * const buffer,GLuint location)
+		: location(location), buffer(*buffer) {
+		vert_size = 0;
+		number_of_vertices = 0;
+	}
 
 	void initialize(int vector_size,int size);
 	void initialize(int vector_size,int size,const GLfloat * data);

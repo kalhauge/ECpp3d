@@ -23,7 +23,9 @@ public:
 
 
 class Texture2d : public Texture {
-static GLuint location;
+
+	static GLuint bound;
+	void ensureBound();
 public:
 
 };

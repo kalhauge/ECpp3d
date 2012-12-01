@@ -19,15 +19,14 @@
 namespace ECpp3d {
 
 class Object;
-class OpenGLHandler;
-class Exception;
-class NotInitializedException;
-class OpenGLException;
-class OpenGLOutOfMemmoryException;
-class OpenGLInvalidOperationException;
-class OpenGLInconsistentStateException;
+
+typedef std::vector<Object*> Objects;
 
 class Object {
+public:
+
+	virtual ~Object() {};
+
 	virtual const std::string toString() const {
 		std::stringstream s;
 		s << "<Object at:" << this << ">";
@@ -37,60 +36,32 @@ class Object {
 	friend std::ostream& operator<< (std::ostream& stream, const Object& object) {
 		return stream << object.toString();
 	}
+
+	static void deleteObjects(Objects & object);
 };
 
+inline std::ostream& operator<<(std::ostream& stream,Objects & object) {
+	return stream << "<ObjectVector : "<< object.size() <<">";
+}
+}
 
 
+#include "ECpp3dException.h"
 
-class Exception : public Object {
-	std::string message;
-public:
-    ~Exception() {}
+namespace ECpp3d {
 
-    virtual void setMessage(const std::string & message){
-    	this->message = std::string(message);
-    }
-
-    virtual const std::string getMessage() const {return message;}
-    const std::string toString() const {return getMessage();}
-};
-
-class NotInitializedException : public Exception {
-	const Object * object;
-public:
-	NotInitializedException(const Object * object);
-	void setObject(const Object * object);
-	const std::string getMessage() const;
-};
+class OpenGLHandler;
+typedef std::vector<OpenGLHandler*> Handlers;
 
 
-class OpenGLException : public Exception {};
-
-class OpenGLOutOfMemmoryException : public OpenGLException {
-public:	const std::string getMessage() const;
-};
-
-class OpenGLInvalidOperationException : public OpenGLException {
-public: const std::string getMessage() const;
-};
-
-class OpenGLInconsistentStateException : public OpenGLException {
-	const OpenGLHandler * handler;
-	std::string name;
-	GLint handler_value;
-	GLint server_value;
-public:
-	OpenGLInconsistentStateException(
-			const OpenGLHandler * handler,
-			const std::string & name,
-			GLint handler,
-			GLint server);
-	const std::string getMessage() const;
-};
 class OpenGLHandler : public Object {
 public:
+	virtual ~OpenGLHandler() {};
 	virtual void finalize() = 0;
 	virtual void validate() const throw (OpenGLException)= 0;
+
+	static void finalize(Handlers & handlers);
+
 };
 
 class OpenGLContext {
@@ -98,7 +69,6 @@ public:
 	static void printspecs(std::ostream & out);
 	static void checkForErrors() throw (OpenGLException);
 };
-
 
 }
 

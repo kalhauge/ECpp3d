@@ -11,7 +11,7 @@
 
 #include "ECpp3dUtils.h"
 #include "ECpp3dShaderVariable.h"
-#include "ECpp3dVertexArray.h"
+#include "handlers/ECpp3dVertexArray.h"
 #include <vector>
 #include <string>
 

@@ -5,66 +5,49 @@
  *      Author: christian
  */
 
-#include "ECpp3dVertexArray.h"
+#include "handlers/ECpp3dVertexArray.h"
 
 namespace ECpp3d {
 
-GLuint VertexArray::bound = 0;
+const VertexArray * VertexArray::bound = 0;
 
 
-std::vector<VertexArray> VertexArray::generateVertexArrays(GLsizei size) {
+VertexArrays VertexArray::generateVertexArrays(GLsizei size) {
 	GLuint locations[size];
 	glGenVertexArrays(size,locations);
-	std::vector<Buffer> buffers = Buffer::generateBuffers(size);
-	std::vector<VertexArray> arrays;
-	for(int i = 0; i < size; ++i)
-		arrays.push_back(VertexArray(buffers[i],locations[i]));
+	Buffers buffers = Buffer::generateBuffers(size);
+	VertexArrays arrays;
+	for(int i = 0; i < size; ++i) {
+		ArrayBuffer * buffer = new ArrayBuffer(buffers[i]);
+		VertexArray * narray = new VertexArray(buffer,locations[i]);
+		arrays.push_back(narray);
+		delete buffers[i];
+	}
 
 	return arrays;
 }
 
-VertexArray VertexArray::generateVertexArray() {
+VertexArray * VertexArray::generateVertexArray() {
 	return generateVertexArrays(1)[0];
 }
-
-
 
 VertexArray::~VertexArray() {
 
 }
 
-VertexArray::VertexArray() {
-	vert_size = 0;
-	location = -1;
-	number_of_vertices = 0;
-	buffer = ArrayBuffer();
-
-}
-
-VertexArray::VertexArray(const ArrayBuffer & buffer,GLuint location) {
-	this->buffer = ArrayBuffer(buffer);
-	this->location = location;
-	vert_size = 0;
-	number_of_vertices = 0;
-}
-
 
 void VertexArray::ensureBound() const{
-	if(bound != location) {
-		bound == location;
+	if(bound != this) {
+		bound = this;
 		glBindVertexArray(location);
 	}
 }
 
 void VertexArray::initialize(int vector_size, int vertices){
-	ensureBound();
-	vert_size = vector_size;
-	number_of_vertices = vertices;
-	buffer.initialize(NULL,vert_size*number_of_vertices*4,GL_STATIC_DRAW);
+	initialize(vector_size,vertices,0);
 }
 
 void VertexArray::initialize(int vector_size, int vertices,const GLfloat * data){
-	std::cout << location << std::endl;
 	ensureBound();
 	vert_size = vector_size;
 	number_of_vertices = vertices;

@@ -45,7 +45,7 @@ const char * vertex =
 static const GLfloat pos[] = {-0.5f,-0.5f,0,0.5f,0.5f,-0.5f};
 
 
-VertexArray positions;
+VertexArray * positions;
 
 void setupGL(){
     glClearColor(1.0f, 0.5f, 0.0f, 1.0f);
@@ -53,7 +53,7 @@ void setupGL(){
     OpenGLContext::printspecs(cout);
 
     positions = VertexArray::generateVertexArray();
-    positions.initialize(2,3,pos);
+    positions->initialize(2,3,pos);
 
     try {
       program = new ShaderProgram();
@@ -67,7 +67,7 @@ void setupGL(){
       program->attachUniform(UniformDescription::MVP_MATRIX,glm::mat4());
       program->attachUniform(UniformDescription::COLOR,glm::vec4(1.0f,0.5f,0.2f,1.0f));
 
-      program->attachAttribute(AttributeDescription::POSITION,positions);
+      program->attachAttribute(AttributeDescription::POSITION,*positions);
 
       cout << "Uniforms [";
       vector<Uniform> uniforms = program->getActiveUniformList();
@@ -78,6 +78,8 @@ void setupGL(){
       vector<Attribute> attributes = program->getActiveAttributeList();
       copy(attributes.begin(),attributes.end(),ostream_iterator<Attribute>(cout, ", "));
       cout << "]" << endl;
+
+      positions->validate();
 
       OpenGLContext::checkForErrors();
     } catch(Exception & e) {

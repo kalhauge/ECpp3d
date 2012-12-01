@@ -16,6 +16,7 @@ void OpenGLContext::printspecs(std::ostream & out) {
 
 void OpenGLContext::checkForErrors() throw (OpenGLException) {
 	GLenum error = glGetError();
+
 	switch(error) {
 	case GL_NO_ERROR:
 		break;
@@ -23,6 +24,8 @@ void OpenGLContext::checkForErrors() throw (OpenGLException) {
 		throw OpenGLOutOfMemmoryException();
 	case GL_INVALID_OPERATION:
 		throw OpenGLInvalidOperationException();
+	case GL_INVALID_ENUM:
+			throw OpenGLInvalidEnumException();
 	default: throw OpenGLException();
 	}
 }
@@ -72,6 +75,23 @@ const std::string OpenGLInconsistentStateException::getMessage() const {
 			<< " server:" << server_value
 			<< ">";
 	return s.str();
+}
+
+const std::string OpenGLInvalidEnumException::getMessage() const {
+	return "<OpenGLInvalidEnumException>";
+}
+
+void OpenGLHandler::finalize(Handlers & handlers) {
+	for(int i = 0; i < handlers.size(); ++i) {
+		handlers[i]->finalize();
+	}
+	deleteObjects((Objects &) handlers);
+}
+
+void Object::deleteObjects(Objects & objects) {
+	for(int i = 0; i < objects.size(); ++i) {
+		delete objects[i];
+	}
 }
 
 }

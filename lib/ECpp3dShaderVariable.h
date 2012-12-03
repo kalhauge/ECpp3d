@@ -57,7 +57,7 @@ public:
 class UniformDescription : public VariableDescription {
 	void init(const std::string & name, const std::string & description);
 public:
-	static UniformDescription MVP_MATRIX,MV_MATRIX,COLOR;
+	static UniformDescription MVP_MATRIX,MV_MATRIX,COLOR,COLOR_TEXTURE;
 
 	UniformDescription(const UniformDescription & des);
 	UniformDescription(const std::string & name, const std::string & description);

@@ -25,15 +25,14 @@ Buffers Buffer::generateBuffers(GLsizei number){
 	return buffers;
 }
 
+Buffer * Buffer::generateBuffer(){
+	return generateBuffers(1)[0];
+}
+
 const std::string Buffer::toString() const {
 	std::stringstream s;
 	s << "<Buffer: location: " << location << " size: " << size << " usage: " << usage << ">";
 	return s.str();
-}
-
-
-Buffer * Buffer::generateBuffer(){
-	return generateBuffers(1)[0];
 }
 
 void Buffer::initialize(GLenum target, const GLvoid * data,GLsizeiptr size, GLenum usage) {

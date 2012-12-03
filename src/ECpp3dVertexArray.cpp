@@ -21,7 +21,6 @@ VertexArrays VertexArray::generateVertexArrays(GLsizei size) {
 		ArrayBuffer * buffer = new ArrayBuffer(buffers[i]);
 		VertexArray * narray = new VertexArray(buffer,locations[i]);
 		arrays.push_back(narray);
-		delete buffers[i];
 	}
 
 	return arrays;

@@ -20,19 +20,17 @@ typedef std::vector<ArrayBuffer*> ArrayBuffers;
 
 class Buffer : public OpenGLHandler {
 protected:
-	const GLuint location;
 	GLsizeiptr size;
 	GLenum usage;
 	void setData(GLenum target, GLintptr at, const GLvoid * data, GLsizei size);
-public:
-	static Buffers generateBuffers(GLsizei number);
-	static Buffer * generateBuffer();
 
-
-	Buffer(GLuint location) : location(location) {
+	Buffer(GLuint location) : OpenGLHandler(location) {
 		this->size = 0;
 		this->usage = 0;
 	}
+public:
+	static Buffers generateBuffers(GLsizei number);
+	static Buffer * generateBuffer();
 
 	virtual void initialize(GLenum target, const GLvoid * data,GLsizeiptr size, GLenum usage);
 	virtual void finalize();
@@ -40,19 +38,21 @@ public:
 
 	virtual const std::string toString() const;
 	GLint getServerInfo(GLenum target,GLenum e) const;
-
-	GLuint getLocation() const {return location;}
 };
 
 class ArrayBuffer : public Buffer {
+	static const GLuint target = GL_ARRAY_BUFFER;
 	static const ArrayBuffer * bound;
 	void ensureBound() const;
 public:
-	ArrayBuffer(const Buffer * buffer) : Buffer(buffer->getLocation()) {};
+	ArrayBuffer(const Buffer * buffer) : Buffer(buffer->getLocation()) {
+		delete buffer;
+	};
 	void initialize(const GLvoid * data,GLsizeiptr size,GLenum hint);
 	void setData(GLintptr at, const GLvoid * data, GLsizei size);
-	virtual void validate() const throw (OpenGLException);
-	GLint getServerInfo(GLenum e) const;
+	void validate() const throw (OpenGLException);
+
+	GLint getServerInfo(GLenum e) const {return Buffer::getServerInfo(target,e);};
 };
 
 }

@@ -20,7 +20,6 @@ typedef std::vector<VertexArray*> VertexArrays;
 
 class VertexArray : public OpenGLHandler {
 protected:
-	const GLuint location;
 	GLsizei vert_size;
 	GLint number_of_vertices;
 	ArrayBuffer & buffer;
@@ -33,7 +32,7 @@ public:
 
 	virtual ~VertexArray();
 	VertexArray(ArrayBuffer * const buffer,GLuint location)
-		: location(location), buffer(*buffer) {
+		: OpenGLHandler(location), buffer(*buffer) {
 		vert_size = 0;
 		number_of_vertices = 0;
 	}

@@ -46,15 +46,17 @@ static const GLfloat pos[] = {-0.5f,-0.5f,0,0.5f,0.5f,-0.5f};
 
 
 VertexArray * positions;
+Texture2D * texture;
 
 void setupGL(){
     glClearColor(1.0f, 0.5f, 0.0f, 1.0f);
 
+    OpenGLContext::initialize();
     OpenGLContext::printspecs(cout);
 
     positions = VertexArray::generateVertexArray();
     positions->initialize(2,3,pos);
-
+    texture = new Texture2D(Texture::generateTexture());
     try {
       program = new ShaderProgram();
       program->setFragmentShaderCode(fragment);

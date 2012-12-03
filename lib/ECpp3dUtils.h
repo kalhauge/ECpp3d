@@ -37,7 +37,7 @@ public:
 		return stream << object.toString();
 	}
 
-	static void deleteObjects(Objects & object);
+	static void deleteObjects(Objects * const object);
 };
 
 inline std::ostream& operator<<(std::ostream& stream,Objects & object) {
@@ -55,20 +55,21 @@ typedef std::vector<OpenGLHandler*> Handlers;
 
 
 class OpenGLHandler : public Object {
+protected:
+	const GLuint location;
+	OpenGLHandler(GLuint location) : location(location) {};
 public:
 	virtual ~OpenGLHandler() {};
 	virtual void finalize() = 0;
 	virtual void validate() const throw (OpenGLException)= 0;
 
-	static void finalize(Handlers & handlers);
+	static void finalize(Handlers * const handlers);
 
+	GLuint getLocation() const {return location;}
 };
 
-class OpenGLContext {
-public:
-	static void printspecs(std::ostream & out);
-	static void checkForErrors() throw (OpenGLException);
-};
+
+#include "ECpp3dOpenGLContext.h"
 
 }
 

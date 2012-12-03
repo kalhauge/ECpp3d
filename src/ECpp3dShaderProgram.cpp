@@ -176,6 +176,14 @@ void ShaderProgram::attachUniform<glm::vec4>(const UniformDescription & descript
 	glUniform4fv(u.getIndex(),1,glm::value_ptr(a));
 }
 
+template<>
+void ShaderProgram::attachUniform<Texture>(const UniformDescription & description, const Texture & a) const{
+	ensureUsed();
+	const Uniform u = manager.getUniform(description);
+	assert(u.getType() == GL_TEXTURE_BINDING_2D);
+
+	glUniform1i(u.getIndex(),0);
+}
 
 
 }

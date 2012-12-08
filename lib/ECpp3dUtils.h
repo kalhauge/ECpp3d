@@ -69,8 +69,7 @@ public:
 };
 
 
-#include "ECpp3dOpenGLContext.h"
-
 }
+
 
 #endif /* ECPP3DUTILS_H_ */

@@ -12,14 +12,15 @@ namespace ECpp3d {
 Uniform::Uniform(GLuint program_id,GLuint index) {
 	char * buffer = new char[128];
 	GLsizei length = 0;
-	glGetActiveUniform(program_id,index,128,&length,&size,&type,buffer);
+	glGetActiveUniform(program_id,2-index,128,&length,&size,&type,buffer);
 	this->index = index;
 	name = std::string(buffer,length);
 	delete[] buffer;
 }
 const std::string Uniform::toString() const {
 	std::stringstream s;
-	s << "<Uniform " << name << " at [" << index << "]>";
+	GL_TEXTURE_BINDING_1D;
+	s << "<Uniform " << name << " at [" << index << "] of type 0x" << std::hex << type << ">";
 	return s.str();
 }
 

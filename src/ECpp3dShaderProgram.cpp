@@ -7,6 +7,7 @@
 //
 
 #include "ECpp3dShaderProgram.h"
+#include "handlers/ECpp3dTexture.h"
 #include <string.h>
 #include <glm/gtc/type_ptr.hpp>
 
@@ -153,6 +154,22 @@ void ShaderProgram::initialize(bool useStandarts) throw (ShaderCompileException)
 	}
 }
 
+GLuint ShaderProgram::getProgramId() const{
+	return program_id;
+}
+
+void ShaderProgram::validate() throw (OpenGLException) {
+	glValidateProgram(program_id);
+	if(!getServerInfo(GL_VALIDATE_STATUS)) {
+		char a[1024];
+		int length;
+		glGetProgramInfoLog(program_id,1024,&length,a);
+		OpenGLException e;
+		e.setMessage(a);
+		throw e;
+	}
+}
+
 void ShaderProgram::attachAttribute(const AttributeDescription & description, const VertexArray & array) const{
 	ensureUsed();
 	const Attribute a = manager.getAttribute(description);
@@ -160,29 +177,24 @@ void ShaderProgram::attachAttribute(const AttributeDescription & description, co
 }
 
 
-template<>
-void ShaderProgram::attachUniform<glm::mat4>(const UniformDescription & description, const glm::mat4 & a) const{
+void ShaderProgram::attachUniform(const UniformDescription & description, const glm::mat4 & a) const{
 	ensureUsed();
 	const Uniform u = manager.getUniform(description);
 	assert(u.getType() == GL_FLOAT_MAT4);
 	glUniformMatrix4fv(u.getIndex(),1,GL_FALSE,glm::value_ptr(a));
 }
 
-template<>
-void ShaderProgram::attachUniform<glm::vec4>(const UniformDescription & description, const glm::vec4 & a) const{
+void ShaderProgram::attachUniform(const UniformDescription & description, const glm::vec4 & a) const{
 	ensureUsed();
 	const Uniform u = manager.getUniform(description);
 	assert(u.getType() == GL_FLOAT_VEC4);
 	glUniform4fv(u.getIndex(),1,glm::value_ptr(a));
 }
 
-template<>
-void ShaderProgram::attachUniform<Texture>(const UniformDescription & description, const Texture & a) const{
+void ShaderProgram::attachUniform(const UniformDescription & description, Texture * t) const{
 	ensureUsed();
 	const Uniform u = manager.getUniform(description);
-	assert(u.getType() == GL_TEXTURE_BINDING_2D);
-
-	glUniform1i(u.getIndex(),0);
+	t->attach(u);
 }
 
 

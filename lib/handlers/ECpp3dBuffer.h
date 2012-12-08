@@ -51,8 +51,9 @@ public:
 	void initialize(const GLvoid * data,GLsizeiptr size,GLenum hint);
 	void setData(GLintptr at, const GLvoid * data, GLsizei size);
 	void validate() const throw (OpenGLException);
+	void bind() const;
 
-	GLint getServerInfo(GLenum e) const {return Buffer::getServerInfo(target,e);};
+	GLint getServerInfo(GLenum e) const;
 };
 
 }

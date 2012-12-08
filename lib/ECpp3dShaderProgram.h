@@ -12,6 +12,7 @@
 #include "ECpp3dUtils.h"
 #include "ECpp3dShaderVariable.h"
 #include "handlers/ECpp3dVertexArray.h"
+#include "handlers/ECpp3dTexture.h"
 #include <vector>
 #include <string>
 
@@ -46,6 +47,8 @@ public:
 	std::vector<Uniform> getActiveUniformList();
 	std::vector<Attribute> getActiveAttributeList();
 
+	GLuint getProgramId() const;
+
 	GLint getServerInfo(GLenum e) const;
 	GLint getNumberOfActiveUniforms() const;
 	GLint getNumberOfActiveAttributes() const;
@@ -53,9 +56,13 @@ public:
 	ShaderVariableManager & getVariableManager() {return manager;};
 
 	void initialize(bool useStandards = true) throw (ShaderCompileException);
+	void validate() throw (OpenGLException);
 
-	template<typename type>
-	void attachUniform(const UniformDescription & description, const type & a) const;
+	void attachUniform(const UniformDescription & description, const glm::vec4 & a) const;
+	void attachUniform(const UniformDescription & description, const glm::mat4 & a) const;
+
+	void attachUniform(const UniformDescription & description, Texture * a) const;
+
 
 	void attachAttribute(const AttributeDescription & description, const VertexArray & array) const;
 

@@ -6,7 +6,7 @@
  */
 
 #include "handlers/ECpp3dBuffer.h"
-
+#include "ECpp3dOpenGLContext.h"
 namespace ECpp3d {
 
 const ArrayBuffer * ArrayBuffer::bound = 0;
@@ -84,10 +84,14 @@ void ArrayBuffer::setData(GLintptr at, const GLvoid * data, GLsizei size) {
 	Buffer::setData(GL_ARRAY_BUFFER,at,data,size);
 }
 
+void ArrayBuffer::bind() const {
+	bound = this;
+	glBindBuffer(GL_ARRAY_BUFFER,location);
+}
+
 void ArrayBuffer::ensureBound() const{
 	if(bound != this) {
-		bound = this;
-		glBindBuffer(GL_ARRAY_BUFFER,location);
+		bind();
 	}
 }
 

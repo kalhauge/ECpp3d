@@ -8,7 +8,7 @@
 
 #include "handlers/ECpp3dTexture.h"
 #include "ECpp3dOpenGLContext.h"
-#include "CImg/Cimg.h"
+#include <jpeglib.h>
 
 namespace ECpp3d {
 
@@ -139,16 +139,52 @@ GLenum Texture2D::getBindType() const{
 }
 
 void Texture2D::initialize(GLint internalformat,const std::string & filename) {
-	cimg_library::CImg<GLubyte> image(filename.c_str());
+	struct jpeg_decompress_struct cinfo;
+	struct jpeg_error_mgr jerr;
+
+	JSAMPROW row_pointer[1];
+
+	FILE * infile = fopen(filename.c_str(),"rb");
+	if(!infile) throw Exception("Could not find file");
+
+	cinfo.err = jpeg_std_error(&jerr);
+	jpeg_create_decompress((j_decompress_ptr) &cinfo);
+	jpeg_stdio_src( &cinfo, infile );
+	jpeg_read_header( &cinfo, 1 );
+
+	jpeg_start_decompress( &cinfo );
+
+	GLsizei width = cinfo.output_width;
+	GLsizei height = cinfo.output_height;
+	int num = cinfo.output_components;
+
+	GLubyte * image = new GLubyte[width*height*num];
+
 	GLenum format;
-	switch(image.spectrum()) {
+
+	switch(num) {
 		case (1): format = GL_R8; break;
 		case (3): format = GL_RGB; break;
 		case (4): format = GL_RGBA; break;
 		default :
 			throw Exception("Not Know format of loaded image, or it is empty");
 	}
-	Texture2D::initialize(internalformat,image.width(),image.height(),format,GL_UNSIGNED_BYTE,filename.data());
+
+	row_pointer[0] = (unsigned char *)malloc( cinfo.output_width*cinfo.num_components );
+	int location;
+	while( cinfo.output_scanline < cinfo.image_height )
+	{
+		jpeg_read_scanlines( &cinfo, row_pointer, 1 );
+		for(int i=0; i<cinfo.image_width*cinfo.num_components;i++)
+			image[location++] = row_pointer[0][i];
+	}
+
+	jpeg_finish_decompress( &cinfo );
+	jpeg_destroy_decompress( &cinfo );
+	free( row_pointer[0] );
+	fclose( infile );
+
+	Texture2D::initialize(internalformat,width,height,format,GL_UNSIGNED_BYTE,image);
 }
 
 void Texture2D::initialize(GLint internalformat, GLsizei width, GLsizei height, GLenum format, GLenum type, const GLvoid *pixels) {

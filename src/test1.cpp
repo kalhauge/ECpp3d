@@ -24,12 +24,12 @@ ShaderProgram * program;
 const char * fragment = 
   "#version 150\n" 
   "out vec4 fragColor;\n"
-  "uniform sampler1D uColorTex;\n"
+  "uniform sampler2D uColorTex;\n"
   "in vec3 position;\n"
 
   "void main(void)"
   "{"
-  "    fragColor = texture(uColorTex,length(position));\n"
+  "    fragColor = texture(uColorTex,position.xy);\n"
   "}";
 
 
@@ -64,8 +64,10 @@ void setupGL(){
     grad.push_back(Texture1D::gradvector(0,glm::vec4(1,0,0,1)));
     grad.push_back(Texture1D::gradvector(0.5,glm::vec4(0,0,1,1)));
     grad.push_back(Texture1D::gradvector(1,glm::vec4(0,1,0,1)));
-    texture = Texture1D::createLinearGradient(Texture::generateTexture(),512,grad);
-
+ //   texture = Texture1D::createLinearGradient(Texture::generateTexture(),512,grad);
+    Texture2D *t = new Texture2D(Texture::generateTexture());
+    t->initialize(GL_RGB,"/Users/christian/Documents/Fritid/Programering/Eclipse/KalifEngine/assets/textures/texture1.jpg");
+    texture = t;
     try {
       program = new ShaderProgram();
       program->setFragmentShaderCode(fragment);

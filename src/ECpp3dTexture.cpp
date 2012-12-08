@@ -8,7 +8,7 @@
 
 #include "handlers/ECpp3dTexture.h"
 #include "ECpp3dOpenGLContext.h"
-
+#include "CImg/Cimg.h"
 
 namespace ECpp3d {
 
@@ -68,6 +68,10 @@ void Texture::setBaseLevel(GLint level) {
 	setParameter(GL_TEXTURE_BASE_LEVEL,level);
 }
 
+void Texture::setMaxLevel(GLint level) {
+	setParameter(GL_TEXTURE_MAX_LEVEL,level);
+}
+
 void Texture::setMagnifyMethod(GLenum method) {
 	setParameter(GL_TEXTURE_MAG_FILTER,method);
 }
@@ -105,6 +109,7 @@ void Texture1D::initialize(const std::vector<glm::vec4> & data)  {
 	Texture::initialize();
 	glTexImage1D(type,0,GL_RGBA,data.size(),0,GL_RGBA,GL_FLOAT,&data[0]);
 	setBaseLevel(0);
+	setMaxLevel(0);
 }
 
 Texture1D * Texture1D::createLinearGradient(Texture * texture,int size, const gradient & description ) {
@@ -133,8 +138,20 @@ GLenum Texture2D::getBindType() const{
 	return bindtype;
 }
 
+void Texture2D::initialize(GLint internalformat,const std::string & filename) {
+	cimg_library::CImg<GLubyte> image(filename.c_str());
+	GLenum format;
+	switch(image.spectrum()) {
+		case (1): format = GL_R8; break;
+		case (3): format = GL_RGB; break;
+		case (4): format = GL_RGBA; break;
+		default :
+			throw Exception("Not Know format of loaded image, or it is empty");
+	}
+	Texture2D::initialize(internalformat,image.width(),image.height(),format,GL_UNSIGNED_BYTE,filename.data());
+}
 
-void Texture2D::initiailize(GLint internalformat, GLsizei width, GLsizei height, GLenum format, GLenum type, const GLvoid *pixels) {
+void Texture2D::initialize(GLint internalformat, GLsizei width, GLsizei height, GLenum format, GLenum type, const GLvoid *pixels) {
 	Texture::initialize();
 	glTexImage2D(type,0,internalformat,width,height,0,format,type,pixels);
 	setBaseLevel(0);

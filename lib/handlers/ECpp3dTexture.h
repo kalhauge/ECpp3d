@@ -39,6 +39,7 @@ public:
 	void setParameter(GLenum pname, GLint param);
 
 	void setBaseLevel(GLint level);
+	void setMaxLevel(GLint level);
 	void setMinimizeMethod(GLenum method);
 	void setMagnifyMethod(GLenum method);
 };
@@ -98,7 +99,8 @@ public:
 
 
 	GLenum getBindType() const;
-	void initiailize(GLint internalformat, GLsizei width, GLsizei height, GLenum format, GLenum type, const GLvoid *pixels);
+	void initialize(GLint internalformat,const std::string & filename);
+	void initialize(GLint internalformat, GLsizei width, GLsizei height, GLenum format, GLenum type, const GLvoid *pixels);
 };
 
 }

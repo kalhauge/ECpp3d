@@ -12,9 +12,9 @@ namespace ECpp3d {
 Uniform::Uniform(GLuint program_id,GLuint index) {
 	char * buffer = new char[128];
 	GLsizei length = 0;
-	glGetActiveUniform(program_id,2-index,128,&length,&size,&type,buffer);
-	this->index = index;
+	glGetActiveUniform(program_id,index,128,&length,&size,&type,buffer);
 	name = std::string(buffer,length);
+	this->index = glGetUniformLocation(program_id,name.c_str());
 	delete[] buffer;
 }
 const std::string Uniform::toString() const {
@@ -29,7 +29,7 @@ Attribute::Attribute(GLuint program_id,GLuint index) {
 	GLsizei length = 0;
 	glGetActiveAttrib(program_id,index,128,&length,&size,&type,buffer);
 	name = std::string(buffer,length);
-	this->index = index;
+	this->index = glGetAttribLocation(program_id,name.c_str());
 	delete[] buffer;
 
 }
@@ -42,7 +42,7 @@ ShaderVariableDoesExistException::ShaderVariableDoesExistException(const Variabl
 
 ShaderVariableDoesNotExistException::ShaderVariableDoesNotExistException(const std::string & name) {
 	std::stringstream s;
-	s << "<ShaderVariableDoesNotExistException tried with : " << name << ">";
+	s << "<ShaderVariableDoesNotExistException tried with : '" << name << "'>";
 	setMessage(s.str());
 }
 

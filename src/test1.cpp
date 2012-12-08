@@ -24,13 +24,12 @@ ShaderProgram * program;
 const char * fragment = 
   "#version 150\n" 
   "out vec4 fragColor;\n"
-  "uniform vec4 uColor;"
   "uniform sampler1D uColorTex;\n"
   "in vec3 position;\n"
 
   "void main(void)"
   "{"
-  "    fragColor = uColor * texture(uColorTex,length(position)*2);\n"
+  "    fragColor = texture(uColorTex,length(position));\n"
   "}";
 
 
@@ -77,7 +76,7 @@ void setupGL(){
       cout << program->getNumberOfActiveUniforms() << endl;
 
       program->attachUniform(UniformDescription::MVP_MATRIX,glm::mat4());
-      program->attachUniform(UniformDescription::COLOR,glm::vec4(1.0f,0.5f,0.2f,1.0f));
+//      program->attachUniform(UniformDescription::COLOR,glm::vec4(1.0f,0.5f,0.2f,1.0f));
       program->attachUniform(UniformDescription::COLOR_TEXTURE,texture);
       program->attachAttribute(AttributeDescription::POSITION,*positions);
 

@@ -29,7 +29,7 @@ const char * fragment =
 
   "void main(void)"
   "{"
-  "    fragColor = texture(uColorTex,position.xy);\n"
+  "    fragColor = texture(uColorTex,(position*2).xy);\n"
   "}";
 
 
@@ -65,10 +65,13 @@ void setupGL(){
     grad.push_back(Texture1D::gradvector(0.5,glm::vec4(0,0,1,1)));
     grad.push_back(Texture1D::gradvector(1,glm::vec4(0,1,0,1)));
  //   texture = Texture1D::createLinearGradient(Texture::generateTexture(),512,grad);
-    Texture2D *t = new Texture2D(Texture::generateTexture());
-    t->initialize(GL_RGB,"/Users/christian/Documents/Fritid/Programering/Eclipse/KalifEngine/assets/textures/texture1.jpg");
-    texture = t;
+
     try {
+
+      Texture2D *t = new Texture2D(Texture::generateTexture());
+      t->initialize(GL_RGBA,"/Users/christian/Documents/Fritid/Programering/Eclipse/KalifEngine/assets/textures/texture1.jpg");
+      texture = t;
+
       program = new ShaderProgram();
       program->setFragmentShaderCode(fragment);
       program->setVertexShaderCode(vertex);

@@ -170,8 +170,8 @@ void Texture2D::initialize(GLint internalformat,const std::string & filename) {
 			throw Exception("Not Know format of loaded image, or it is empty");
 	}
 
-	row_pointer[0] = (unsigned char *)malloc( cinfo.output_width*cinfo.num_components );
-	int location;
+	row_pointer[0] = (unsigned char *)malloc(width*num);
+	int location = 0;
 	while( cinfo.output_scanline < cinfo.image_height )
 	{
 		jpeg_read_scanlines( &cinfo, row_pointer, 1 );
@@ -185,12 +185,14 @@ void Texture2D::initialize(GLint internalformat,const std::string & filename) {
 	fclose( infile );
 
 	Texture2D::initialize(internalformat,width,height,format,GL_UNSIGNED_BYTE,image);
+	delete image;
 }
 
 void Texture2D::initialize(GLint internalformat, GLsizei width, GLsizei height, GLenum format, GLenum type, const GLvoid *pixels) {
 	Texture::initialize();
-	glTexImage2D(type,0,internalformat,width,height,0,format,type,pixels);
+	glTexImage2D(this->type,0,internalformat,width,height,0,format,type,pixels);
 	setBaseLevel(0);
+	setMaxLevel(0);
 }
 
 }

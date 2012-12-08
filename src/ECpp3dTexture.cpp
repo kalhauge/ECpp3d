@@ -58,6 +58,7 @@ void Texture::finalize() {
 
 void Texture::attach(const Uniform & u) {
 	ensureSampler();
+	assert(u.getType() == bindtype);
 	glUniform1i(u.getIndex(),sampler->getActiveId());
 }
 

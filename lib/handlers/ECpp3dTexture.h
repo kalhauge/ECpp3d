@@ -62,7 +62,7 @@ public:
 
 class Texture1D : public Texture {
 	static const GLenum type = GL_TEXTURE_1D;
-	static const GLenum bindtype = GL_TEXTURE_BINDING_1D;
+	static const GLenum bindtype = GL_SAMPLER_1D;
 public:
 	Texture1D(Texture * const texture) : Texture(texture->getLocation(),type,bindtype) {
 		delete texture;
@@ -81,7 +81,7 @@ public:
 
 class Texture2D : public Texture {
 	static const GLenum type = GL_TEXTURE_2D;
-	static const GLenum bindtype = GL_TEXTURE_BINDING_2D;
+	static const GLenum bindtype = GL_SAMPLER_2D;
 public:
 	Texture2D(Texture * const texture) : Texture(texture->getLocation(),type,bindtype) {
 		delete texture;

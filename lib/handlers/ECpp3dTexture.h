@@ -32,11 +32,20 @@ public:
 	static Texture * generateTexture();
 
 	void attach(const Uniform & u);
-
 	void freeSampler();
 	void finalize();
 	void validate() const throw (OpenGLException){};
+
+	void setParameter(GLenum pname, GLint param);
+
+	void setBaseLevel(GLint level);
+	void setMinimizeMethod(GLenum method);
+	void setMagnifyMethod(GLenum method);
 };
+
+inline void Texture::setParameter(GLenum pname, GLint param) {
+	glTexParameteri(type, pname,param);
+}
 
 
 class Sampler : public Object {
@@ -89,7 +98,7 @@ public:
 
 
 	GLenum getBindType() const;
-	void initiailize();
+	void initiailize(GLint internalformat, GLsizei width, GLsizei height, GLenum format, GLenum type, const GLvoid *pixels);
 };
 
 }

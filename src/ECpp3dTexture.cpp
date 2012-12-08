@@ -38,7 +38,9 @@ Textures Texture::generateTextures(GLsizei number){
 }
 
 void Texture::initialize() {
+	Texture::ensureSampler();
 }
+
 void Texture::ensureSampler(){
 	if(!sampler) {
 		sampler = OpenGLContext::getSampler();
@@ -60,6 +62,18 @@ void Texture::attach(const Uniform & u) {
 	ensureSampler();
 	assert(u.getType() == bindtype);
 	glUniform1i(u.getIndex(),sampler->getActiveId());
+}
+
+void Texture::setBaseLevel(GLint level) {
+	setParameter(GL_TEXTURE_BASE_LEVEL,level);
+}
+
+void Texture::setMagnifyMethod(GLenum method) {
+	setParameter(GL_TEXTURE_MAG_FILTER,method);
+}
+
+void Texture::setMinimizeMethod(GLenum method) {
+	setParameter(GL_TEXTURE_MIN_FILTER,method);
 }
 
 
@@ -89,12 +103,8 @@ Samplers Sampler::getSamplers() {
 
 void Texture1D::initialize(const std::vector<glm::vec4> & data)  {
 	Texture::initialize();
-	Texture::ensureSampler();
-	std::cout << data.size() << std::endl;
-
 	glTexImage1D(type,0,GL_RGBA,data.size(),0,GL_RGBA,GL_FLOAT,&data[0]);
-	glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_BASE_LEVEL, 0);
-	glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_MAX_LEVEL, 0);
+	setBaseLevel(0);
 }
 
 Texture1D * Texture1D::createLinearGradient(Texture * texture,int size, const gradient & description ) {
@@ -124,8 +134,10 @@ GLenum Texture2D::getBindType() const{
 }
 
 
-void Texture2D::initiailize() {
-
+void Texture2D::initiailize(GLint internalformat, GLsizei width, GLsizei height, GLenum format, GLenum type, const GLvoid *pixels) {
+	Texture::initialize();
+	glTexImage2D(type,0,internalformat,width,height,0,format,type,pixels);
+	setBaseLevel(0);
 }
 
 }

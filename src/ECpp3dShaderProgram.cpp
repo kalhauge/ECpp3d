@@ -200,29 +200,33 @@ void ShaderProgram::validate() throw (OpenGLException) {
 
 void ShaderProgram::attachAttribute(const AttributeDescription & description, const VertexArray & array) const{
 	ensureUsed();
-	const Attribute a = manager.getAttribute(description);
-	array.attach(a.getIndex());
+	const Attribute * a = manager.getAttribute(description);
+	if(!a) return;
+	array.attach(a->getIndex());
 }
 
 
 void ShaderProgram::attachUniform(const UniformDescription & description, const glm::mat4 & a) const{
 	ensureUsed();
-	const Uniform u = manager.getUniform(description);
-	assert(u.getType() == GL_FLOAT_MAT4);
-	glUniformMatrix4fv(u.getIndex(),1,GL_FALSE,glm::value_ptr(a));
+	const Uniform * u = manager.getUniform(description);
+	if(!u) return;
+	assert(u->getType() == GL_FLOAT_MAT4);
+	glUniformMatrix4fv(u->getIndex(),1,GL_FALSE,glm::value_ptr(a));
 }
 
 void ShaderProgram::attachUniform(const UniformDescription & description, const glm::vec4 & a) const{
 	ensureUsed();
-	const Uniform u = manager.getUniform(description);
-	assert(u.getType() == GL_FLOAT_VEC4);
-	glUniform4fv(u.getIndex(),1,glm::value_ptr(a));
+	const Uniform * u = manager.getUniform(description);
+	if(!u) return;
+	assert(u->getType() == GL_FLOAT_VEC4);
+	glUniform4fv(u->getIndex(),1,glm::value_ptr(a));
 }
 
 void ShaderProgram::attachUniform(const UniformDescription & description, Texture * t) const{
 	ensureUsed();
-	const Uniform u = manager.getUniform(description);
-	t->attach(u);
+	const Uniform * u = manager.getUniform(description);
+	if(!u) return;
+	t->attach(*u);
 }
 
 

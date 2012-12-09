@@ -19,7 +19,6 @@ Uniform::Uniform(GLuint program_id,GLuint index) {
 }
 const std::string Uniform::toString() const {
 	std::stringstream s;
-	GL_TEXTURE_BINDING_1D;
 	s << "<Uniform " << name << " at [" << index << "] of type 0x" << std::hex << type << ">";
 	return s.str();
 }
@@ -77,20 +76,24 @@ void ShaderVariableManager::loadStandards() {
 	registerAttribute(AttributeDescription::NORMAL);
 }
 
-const Uniform& ShaderVariableManager::getUniform(int variable_enum) const {
-	return uniforms.find(variable_enum)->second;
+const Uniform * ShaderVariableManager::getUniform(int variable_enum) const {
+	std::map<int,Uniform>::const_iterator i =  uniforms.find(variable_enum);
+	if(i == uniforms.end()) return 0;
+	return &i->second;
 }
 
-const Attribute& ShaderVariableManager::getAttribute(int variable_enum) const {
-	return attributes.find(variable_enum)->second;
+const Attribute* ShaderVariableManager::getAttribute(int variable_enum) const {
+	std::map<int,Attribute>::const_iterator i =  attributes.find(variable_enum);
+	if(i == attributes.end()) return 0;
+	return &i->second;
 }
 
-const Uniform& ShaderVariableManager::getUniform(
+const Uniform * ShaderVariableManager::getUniform(
 		const UniformDescription& desc) const {
 	return getUniform(desc.getId());
 }
 
-const Attribute& ShaderVariableManager::getAttribute(
+const Attribute*  ShaderVariableManager::getAttribute(
 		const AttributeDescription& desc) const {
 	return getAttribute(desc.getId());
 }

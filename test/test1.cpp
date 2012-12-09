@@ -39,21 +39,21 @@ void setupGL(){
     grad.push_back(Texture1D::gradvector(0,glm::vec4(1,0,0,1)));
     grad.push_back(Texture1D::gradvector(0.5,glm::vec4(0,0,1,1)));
     grad.push_back(Texture1D::gradvector(1,glm::vec4(0,1,0,1)));
- //   texture = Texture1D::createLinearGradient(Texture::generateTexture(),512,grad);
+    texture = Texture1D::createLinearGradient(Texture::generateTexture(),512,grad);
 
     try {
 
       Texture2D *t = new Texture2D(Texture::generateTexture());
       t->initialize(GL_RGBA,"./crate.jpg");
-      texture = t;
+//      texture = t;
 
-      program = ShaderProgram::fromProgramLocation("./simple");
+      program = ShaderProgram::fromProgramLocation("./simple1D");
       program->initialize();
 
       cout << program->getNumberOfActiveUniforms() << endl;
 
       program->attachUniform(UniformDescription::MVP_MATRIX,glm::mat4());
-//      program->attachUniform(UniformDescription::COLOR,glm::vec4(1.0f,0.5f,0.2f,1.0f));
+      program->attachUniform(UniformDescription::COLOR,glm::vec4(1.0f,0.5f,0.2f,1.0f));
       program->attachUniform(UniformDescription::COLOR_TEXTURE,texture);
       program->attachAttribute(AttributeDescription::POSITION,*positions);
 

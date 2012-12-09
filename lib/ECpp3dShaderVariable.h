@@ -107,10 +107,10 @@ protected:
 public:
 	void registerUniform(const UniformDescription & description) throw (ShaderVariableDoesExistException);
 	void registerAttribute(const AttributeDescription & description) throw (ShaderVariableDoesExistException);
-	const Uniform & getUniform(int variable_enum) const;
-	const Attribute & getAttribute(int variable_enum) const;
-	const Uniform & getUniform(const UniformDescription & desc) const;
-	const Attribute & getAttribute(const AttributeDescription & desc) const;
+	const Uniform * getUniform(int variable_enum) const;
+	const Attribute * getAttribute(int variable_enum) const;
+	const Uniform * getUniform(const UniformDescription & desc) const;
+	const Attribute * getAttribute(const AttributeDescription & desc) const;
 	void loadStandards();
 	void loadVariables(std::vector<Uniform> uniforms,std::vector<Attribute> attributes) throw (ShaderVariableDoesNotExistException);
 };

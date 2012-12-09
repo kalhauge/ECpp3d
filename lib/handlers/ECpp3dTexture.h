@@ -32,11 +32,21 @@ public:
 	static Texture * generateTexture();
 
 	void attach(const Uniform & u);
-
 	void freeSampler();
 	void finalize();
 	void validate() const throw (OpenGLException){};
+
+	void setParameter(GLenum pname, GLint param);
+
+	void setBaseLevel(GLint level);
+	void setMaxLevel(GLint level);
+	void setMinimizeMethod(GLenum method);
+	void setMagnifyMethod(GLenum method);
 };
+
+inline void Texture::setParameter(GLenum pname, GLint param) {
+	glTexParameteri(type, pname,param);
+}
 
 
 class Sampler : public Object {
@@ -62,7 +72,7 @@ public:
 
 class Texture1D : public Texture {
 	static const GLenum type = GL_TEXTURE_1D;
-	static const GLenum bindtype = GL_TEXTURE_BINDING_1D;
+	static const GLenum bindtype = GL_SAMPLER_1D;
 public:
 	Texture1D(Texture * const texture) : Texture(texture->getLocation(),type,bindtype) {
 		delete texture;
@@ -81,7 +91,7 @@ public:
 
 class Texture2D : public Texture {
 	static const GLenum type = GL_TEXTURE_2D;
-	static const GLenum bindtype = GL_TEXTURE_BINDING_2D;
+	static const GLenum bindtype = GL_SAMPLER_2D;
 public:
 	Texture2D(Texture * const texture) : Texture(texture->getLocation(),type,bindtype) {
 		delete texture;
@@ -89,7 +99,8 @@ public:
 
 
 	GLenum getBindType() const;
-	void initiailize();
+	void initialize(GLint internalformat,const std::string & filename);
+	void initialize(GLint internalformat, GLsizei width, GLsizei height, GLenum format, GLenum type, const GLvoid *pixels);
 };
 
 }

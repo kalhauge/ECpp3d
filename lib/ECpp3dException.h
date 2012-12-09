@@ -19,7 +19,10 @@ class Exception : public Object {
 	std::string message;
 public:
     virtual ~Exception() {}
-
+    Exception() {}
+    Exception(const std::string & message) {
+    	setMessage(message);
+    }
     virtual void setMessage(const std::string & message){
     	this->message = std::string(message);
     }

@@ -8,7 +8,7 @@
 
 #include "handlers/ECpp3dTexture.h"
 #include "ECpp3dOpenGLContext.h"
-
+#include <jpeglib.h>
 
 namespace ECpp3d {
 
@@ -38,7 +38,9 @@ Textures Texture::generateTextures(GLsizei number){
 }
 
 void Texture::initialize() {
+	Texture::ensureSampler();
 }
+
 void Texture::ensureSampler(){
 	if(!sampler) {
 		sampler = OpenGLContext::getSampler();
@@ -58,7 +60,24 @@ void Texture::finalize() {
 
 void Texture::attach(const Uniform & u) {
 	ensureSampler();
+	assert(u.getType() == bindtype);
 	glUniform1i(u.getIndex(),sampler->getActiveId());
+}
+
+void Texture::setBaseLevel(GLint level) {
+	setParameter(GL_TEXTURE_BASE_LEVEL,level);
+}
+
+void Texture::setMaxLevel(GLint level) {
+	setParameter(GL_TEXTURE_MAX_LEVEL,level);
+}
+
+void Texture::setMagnifyMethod(GLenum method) {
+	setParameter(GL_TEXTURE_MAG_FILTER,method);
+}
+
+void Texture::setMinimizeMethod(GLenum method) {
+	setParameter(GL_TEXTURE_MIN_FILTER,method);
 }
 
 
@@ -88,12 +107,9 @@ Samplers Sampler::getSamplers() {
 
 void Texture1D::initialize(const std::vector<glm::vec4> & data)  {
 	Texture::initialize();
-	Texture::ensureSampler();
-	std::cout << data.size() << std::endl;
-
 	glTexImage1D(type,0,GL_RGBA,data.size(),0,GL_RGBA,GL_FLOAT,&data[0]);
-	glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_BASE_LEVEL, 0);
-	glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_MAX_LEVEL, 0);
+	setBaseLevel(0);
+	setMaxLevel(0);
 }
 
 Texture1D * Texture1D::createLinearGradient(Texture * texture,int size, const gradient & description ) {
@@ -122,9 +138,61 @@ GLenum Texture2D::getBindType() const{
 	return bindtype;
 }
 
+void Texture2D::initialize(GLint internalformat,const std::string & filename) {
+	struct jpeg_decompress_struct cinfo;
+	struct jpeg_error_mgr jerr;
 
-void Texture2D::initiailize() {
+	JSAMPROW row_pointer[1];
 
+	FILE * infile = fopen(filename.c_str(),"rb");
+	if(!infile) throw Exception("Could not find file");
+
+	cinfo.err = jpeg_std_error(&jerr);
+	jpeg_create_decompress((j_decompress_ptr) &cinfo);
+	jpeg_stdio_src( &cinfo, infile );
+	jpeg_read_header( &cinfo, 1 );
+
+	jpeg_start_decompress( &cinfo );
+
+	GLsizei width = cinfo.output_width;
+	GLsizei height = cinfo.output_height;
+	int num = cinfo.output_components;
+
+	GLubyte * image = new GLubyte[width*height*num];
+
+	GLenum format;
+
+	switch(num) {
+		case (1): format = GL_R8; break;
+		case (3): format = GL_RGB; break;
+		case (4): format = GL_RGBA; break;
+		default :
+			throw Exception("Not Know format of loaded image, or it is empty");
+	}
+
+	row_pointer[0] = (unsigned char *)malloc(width*num);
+	int location = 0;
+	while( cinfo.output_scanline < cinfo.image_height )
+	{
+		jpeg_read_scanlines( &cinfo, row_pointer, 1 );
+		for(int i=0; i<cinfo.image_width*cinfo.num_components;i++)
+			image[location++] = row_pointer[0][i];
+	}
+
+	jpeg_finish_decompress( &cinfo );
+	jpeg_destroy_decompress( &cinfo );
+	free( row_pointer[0] );
+	fclose( infile );
+
+	Texture2D::initialize(internalformat,width,height,format,GL_UNSIGNED_BYTE,image);
+	delete image;
+}
+
+void Texture2D::initialize(GLint internalformat, GLsizei width, GLsizei height, GLenum format, GLenum type, const GLvoid *pixels) {
+	Texture::initialize();
+	glTexImage2D(this->type,0,internalformat,width,height,0,format,type,pixels);
+	setBaseLevel(0);
+	setMaxLevel(0);
 }
 
 }

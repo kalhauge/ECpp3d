@@ -24,13 +24,12 @@ ShaderProgram * program;
 const char * fragment = 
   "#version 150\n" 
   "out vec4 fragColor;\n"
-  "uniform vec4 uColor;"
-  "uniform sampler1D uColorTex;\n"
+  "uniform sampler2D uColorTex;\n"
   "in vec3 position;\n"
 
   "void main(void)"
   "{"
-  "    fragColor = uColor * texture(uColorTex,length(position)*2);\n"
+  "    fragColor = texture(uColorTex,(position*2).xy);\n"
   "}";
 
 
@@ -65,9 +64,14 @@ void setupGL(){
     grad.push_back(Texture1D::gradvector(0,glm::vec4(1,0,0,1)));
     grad.push_back(Texture1D::gradvector(0.5,glm::vec4(0,0,1,1)));
     grad.push_back(Texture1D::gradvector(1,glm::vec4(0,1,0,1)));
-    texture = Texture1D::createLinearGradient(Texture::generateTexture(),512,grad);
+ //   texture = Texture1D::createLinearGradient(Texture::generateTexture(),512,grad);
 
     try {
+
+      Texture2D *t = new Texture2D(Texture::generateTexture());
+      t->initialize(GL_RGBA,"/Users/christian/Documents/Fritid/Programering/Eclipse/KalifEngine/assets/textures/texture1.jpg");
+      texture = t;
+
       program = new ShaderProgram();
       program->setFragmentShaderCode(fragment);
       program->setVertexShaderCode(vertex);
@@ -77,7 +81,7 @@ void setupGL(){
       cout << program->getNumberOfActiveUniforms() << endl;
 
       program->attachUniform(UniformDescription::MVP_MATRIX,glm::mat4());
-      program->attachUniform(UniformDescription::COLOR,glm::vec4(1.0f,0.5f,0.2f,1.0f));
+//      program->attachUniform(UniformDescription::COLOR,glm::vec4(1.0f,0.5f,0.2f,1.0f));
       program->attachUniform(UniformDescription::COLOR_TEXTURE,texture);
       program->attachAttribute(AttributeDescription::POSITION,*positions);
 

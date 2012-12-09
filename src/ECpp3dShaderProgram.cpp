@@ -8,7 +8,8 @@
 
 #include "ECpp3dShaderProgram.h"
 #include "handlers/ECpp3dTexture.h"
-#include <string.h>
+#include <string>
+#include <fstream>
 #include <glm/gtc/type_ptr.hpp>
 
 
@@ -85,7 +86,7 @@ GLuint ShaderProgram::compileShader(const GLchar * code,const GLint length,const
     
     if(status != GL_TRUE){
         glGetShaderiv(loc, GL_INFO_LOG_LENGTH, &status);
-        const char * err_message;
+        std::string err_message;
         if(status > 0) {
             char * message = new char[status+1];
             message[status] = 0;
@@ -96,7 +97,7 @@ GLuint ShaderProgram::compileShader(const GLchar * code,const GLint length,const
             err_message = "No message in Shader Log";
         }
         glDeleteShader(loc);
-        throw ShaderCompileException(err_message);
+        throw ShaderCompileException((type == GL_FRAGMENT_SHADER ? "Fragment Shader: " : "Vertex Shader: ") + err_message);
     }
     
     return loc;
@@ -141,6 +142,33 @@ std::vector<Attribute> ShaderProgram::getActiveAttributeList() {
 	return attributes;
 }
 
+std::string getFileContent(const std::string & filename) {
+	std::ifstream file(filename.c_str());
+	if(file) {
+		std::string a;
+		file.seekg(0,std::ios::end);
+		a.resize(file.tellg());
+		file.seekg(0,std::ios::beg);
+		file.read(&a[0],a.size());
+		return a;
+	} throw Exception("No file found: " + filename);
+
+}
+
+ShaderProgram * ShaderProgram::fromProgramLocation(const std::string & program_loc) throw (ShaderCompileException) {
+	return fromFileLocations(program_loc + ".vs", program_loc + ".fs");
+}
+
+
+ShaderProgram * ShaderProgram::fromFileLocations(
+		const std::string &  vert_shader_loc,
+		const std::string & frag_shader_loc) throw (ShaderCompileException){
+	ShaderProgram & p = *(new ShaderProgram());
+	p.setVertexShaderCode(getFileContent(vert_shader_loc).c_str());
+	p.setFragmentShaderCode(getFileContent(frag_shader_loc).c_str());
+	p.compile();
+	return &p;
+}
 
 void ShaderProgram::initialize(bool useStandarts) throw (ShaderCompileException){
 	if(program_id == -1 || getServerInfo(GL_LINK_STATUS) != GL_TRUE) {

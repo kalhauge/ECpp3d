@@ -42,6 +42,12 @@ public:
 	ShaderProgram();
 	ShaderProgram(const char * vertex_shader_code, const char * fragment_shader_code);
 
+	static ShaderProgram * fromProgramLocation(const std::string & program_loc)
+			throw (ShaderCompileException);
+	static ShaderProgram * fromFileLocations(
+			const std::string &  vert_shader_loc,
+			const std::string & frag_shader_loc) throw (ShaderCompileException);
+
 	void setVertexShaderCode(const char * vertex_sharder_code);
 	void setFragmentShaderCode(const char * fragment_shader_code);
 	std::vector<Uniform> getActiveUniformList();

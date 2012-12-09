@@ -21,31 +21,6 @@ using namespace ECpp3d;
 
 ShaderProgram * program;
 
-const char * fragment = 
-  "#version 150\n" 
-  "out vec4 fragColor;\n"
-  "uniform sampler2D uColorTex;\n"
-  "in vec3 position;\n"
-
-  "void main(void)"
-  "{"
-  "    fragColor = texture(uColorTex,(position*2).xy);\n"
-  "}";
-
-
-const char * vertex =
-  "#version 150\n"
-  "uniform mat4 mvpMatrix;\n"
- 
-  "in vec4 vPosition;\n"
-  "out vec3 position;\n"
- 
-  "void main()"
-  "{"   
-    "gl_Position = mvpMatrix * vPosition;\n"
-    "position = (mvpMatrix * vPosition).xyz;\n"
-  "}";
-
 static const GLfloat pos[] = {-0.5f,-0.5f,0,0.5f,0.5f,-0.5f};
 
 
@@ -69,13 +44,10 @@ void setupGL(){
     try {
 
       Texture2D *t = new Texture2D(Texture::generateTexture());
-      t->initialize(GL_RGBA,"/Users/christian/Documents/Fritid/Programering/Eclipse/KalifEngine/assets/textures/texture1.jpg");
+      t->initialize(GL_RGBA,"./crate.jpg");
       texture = t;
 
-      program = new ShaderProgram();
-      program->setFragmentShaderCode(fragment);
-      program->setVertexShaderCode(vertex);
-      program->compile();
+      program = ShaderProgram::fromProgramLocation("./simple");
       program->initialize();
 
       cout << program->getNumberOfActiveUniforms() << endl;

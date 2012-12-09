@@ -1,4 +1,8 @@
 
 *.obj
 
+.DS_Store
+libecpp3d.a
+
+
 bin/test1

@@ -94,7 +94,6 @@ void setupGL(){
 
       program->attachUniform(UniformDescription::COLOR,glm::vec4(1.0f,0.5f,0.2f,1.0f));
       program->attachUniform(UniformDescription::COLOR_TEXTURE,texture);
-      rect->attachTo(*program);
 
       cout << "Uniforms [";
       vector<Uniform> uniforms = program->getActiveUniformList();
@@ -143,7 +142,8 @@ int main(int argc, char ** argv)
         modelview = glm::rotate(modelview,360.0f*i,glm::vec3(0.0f,1.0f,0.0f));
         program->attachUniform(UniformDescription::MVP_MATRIX,projection * modelview);
 
-    	program->ensureUsed();
+    	program->use();
+    	rect->bind();
     	glDrawArrays(GL_TRIANGLES,0,6);
     	OpenGLContext::checkForErrors();
     	glfwSwapBuffers();

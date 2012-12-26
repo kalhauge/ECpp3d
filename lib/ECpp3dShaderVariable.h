@@ -76,6 +76,7 @@ public:
 	const std::string toString() const;
 };
 
+typedef std::vector<const AttributeDescription*> AttributeDescriptions;
 
 class ShaderVariableException : public Exception {
 
@@ -97,22 +98,17 @@ protected:
 	typedef std::map<const std::string, const UniformDescription> uniform_desc_map;
 	typedef std::pair<const std::string, const UniformDescription> uniform_desc_entry;
 
-	typedef std::map<const std::string, const AttributeDescription> attribute_desc_map;
-	typedef std::pair<const std::string, const AttributeDescription> attribute_desc_entry;
-
 	uniform_desc_map uniform_ids;
-	attribute_desc_map attribute_ids;
+	std::vector<const AttributeDescription*> attributes;
 	std::map<int,Uniform> uniforms;
-	std::map<int,Attribute> attributes;
 public:
 	void registerUniform(const UniformDescription & description) throw (ShaderVariableDoesExistException);
 	void registerAttribute(const AttributeDescription & description) throw (ShaderVariableDoesExistException);
 	const Uniform * getUniform(int variable_enum) const;
-	const Attribute * getAttribute(int variable_enum) const;
 	const Uniform * getUniform(const UniformDescription & desc) const;
-	const Attribute * getAttribute(const AttributeDescription & desc) const;
+	const AttributeDescriptions getAttributeDescriptions() const;
 	void loadStandards();
-	void loadVariables(std::vector<Uniform> uniforms,std::vector<Attribute> attributes) throw (ShaderVariableDoesNotExistException);
+	void loadUniforms(std::vector<Uniform> uniforms) throw (ShaderVariableDoesNotExistException);
 };
 
 

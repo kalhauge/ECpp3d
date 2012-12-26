@@ -18,6 +18,7 @@ class OpenGLContext {
 	static bool initialized;
 	static Samplers samplers;
 	static std::set<const Sampler*> freeSamplers;
+	static ShaderVariableManager manager;
 public:
 	static void printspecs(std::ostream & out);
 	static void checkForErrors() throw (OpenGLException);

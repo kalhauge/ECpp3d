@@ -59,6 +59,9 @@ void VertexArray::add(const AttributeDescription & desc,const ArrayBuffer * buff
 void VertexArray::initialize(GLsizei numberOfVerts){
 	bind();
 	this->numberOfVerts = numberOfVerts;
+	for(int i =0; i < buffers.size(); i++ ) {
+		buffers[i].second->attach(buffers[i].first->getId());
+	}
 }
 
 void VertexArray::finalize() {
@@ -71,10 +74,5 @@ void VertexArray::validate() const throw (OpenGLException){
 	}
 }
 
-void VertexArray::attachTo(ShaderProgram & program) const{
-	bind();
-	for(int i = 0; i < buffers.size(); i++)
-		program.attachAttribute(*(buffers[i].first),*(buffers[i].second));
-}
 
 }

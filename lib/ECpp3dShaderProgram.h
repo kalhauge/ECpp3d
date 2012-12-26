@@ -61,7 +61,7 @@ public:
 
 	ShaderVariableManager & getVariableManager() {return manager;};
 
-	void initialize(bool useStandards = true) throw (ShaderCompileException);
+	void initialize() throw (ShaderCompileException);
 	void validate() throw (OpenGLException);
 
 	void attachUniform(const UniformDescription & description, const glm::vec4 & a) const;
@@ -69,12 +69,9 @@ public:
 
 	void attachUniform(const UniformDescription & description, Texture * a) const;
 
+	void use(bool force = false) const;
 
-	void attachAttribute(const AttributeDescription & description, const ArrayBuffer & array) const;
-
-	void ensureUsed() const;
-
-	GLboolean compile() throw (ShaderCompileException);
+	GLboolean compile(bool useStandards = true) throw (ShaderCompileException);
 };
 
 inline GLint ShaderProgram::getServerInfo(GLenum e) const{

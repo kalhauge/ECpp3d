@@ -28,10 +28,10 @@ protected:
 	GLint numberOfVerts;
 	std::vector<VertexArrayData > buffers;
 	static const VertexArray * bound;
-	void bind(bool force = false) const;
 	static void unbind();
 public:
 
+	void bind(bool force = false) const;
 	static VertexArrays generateVertexArrays(GLsizei size);
 	static VertexArray * generateVertexArray();
 
@@ -46,7 +46,6 @@ public:
 
 	void finalize();
 	void validate() const throw (OpenGLException);
-	void attachTo(ShaderProgram & program) const;
 	const std::string toString() const;
 };
 

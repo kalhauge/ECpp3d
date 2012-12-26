@@ -60,10 +60,7 @@ void ShaderVariableManager::registerUniform(const UniformDescription & desc) thr
 }
 
 void ShaderVariableManager::registerAttribute(const AttributeDescription & desc) throw (ShaderVariableDoesExistException){
-	attribute_desc_map::iterator i = attribute_ids.find(desc.getName());
-	if(i != attribute_ids.end())
-		throw ShaderVariableDoesExistException(desc,i->second);
-	attribute_ids.insert(attribute_desc_entry(desc.getName(),desc));
+	attributes.push_back(&desc);
 }
 
 void ShaderVariableManager::loadStandards() {
@@ -84,23 +81,17 @@ const Uniform * ShaderVariableManager::getUniform(int variable_enum) const {
 	return &i->second;
 }
 
-const Attribute* ShaderVariableManager::getAttribute(int variable_enum) const {
-	std::map<int,Attribute>::const_iterator i =  attributes.find(variable_enum);
-	if(i == attributes.end()) return 0;
-	return &i->second;
-}
-
 const Uniform * ShaderVariableManager::getUniform(
 		const UniformDescription& desc) const {
 	return getUniform(desc.getId());
 }
 
-const Attribute*  ShaderVariableManager::getAttribute(
-		const AttributeDescription& desc) const {
-	return getAttribute(desc.getId());
+
+const AttributeDescriptions ShaderVariableManager::getAttributeDescriptions() const{
+	return attributes;
 }
 
-void ShaderVariableManager::loadVariables(std::vector<Uniform> in_uniforms,std::vector<Attribute> in_attributes) throw (ShaderVariableDoesNotExistException) {
+void ShaderVariableManager::loadUniforms(std::vector<Uniform> in_uniforms) throw (ShaderVariableDoesNotExistException) {
 
 	for(std::vector<Uniform>::iterator u = in_uniforms.begin();
 		u != in_uniforms.end();
@@ -108,14 +99,6 @@ void ShaderVariableManager::loadVariables(std::vector<Uniform> in_uniforms,std::
 		uniform_desc_map::iterator i = uniform_ids.find(u->getName());
 		if(i == uniform_ids.end()) throw ShaderVariableDoesNotExistException(u->getName());
 		uniforms.insert(std::pair<int,Uniform>(i->second.getId(),*u));
-	}
-
-	for(std::vector<Attribute>::iterator a = in_attributes.begin();
-		a != in_attributes.end();
-		++a) {
-		attribute_desc_map::iterator i = attribute_ids.find(a->getName());
-		if(i == attribute_ids.end()) throw ShaderVariableDoesNotExistException(a->getName());
-		attributes.insert(std::pair<int,Attribute>(i->second.getId(),*a));
 	}
 }
 

@@ -40,7 +40,9 @@ ShaderProgram::ShaderProgram(const char * vertex_shader_code,const char * fragme
     setVertexShaderCode(vertex_shader_code);
 }
 
-GLboolean ShaderProgram::compile() throw (ShaderCompileException){
+GLboolean ShaderProgram::compile(bool useStandarts) throw (ShaderCompileException){
+	if(useStandarts) manager.loadStandards();
+
     GLint status;
     vertex_shader_id = compileShader(vertex_shader_code,vertex_shader_length,GL_VERTEX_SHADER);
     fragment_shader_id = compileShader(fragment_shader_code,fragment_shader_length,GL_FRAGMENT_SHADER);
@@ -51,6 +53,12 @@ GLboolean ShaderProgram::compile() throw (ShaderCompileException){
     glAttachShader(program_id, fragment_shader_id);
 
     glBindFragDataLocation(program_id,0,"fragColor");
+
+    AttributeDescriptions a = manager.getAttributeDescriptions();
+
+    for(AttributeDescriptions::iterator i = a.begin(); i != a.end(); ++i){
+    	glBindAttribLocation(program_id,(*i)->getId(),(*i)->getName().c_str());
+    }
 
     glLinkProgram(program_id);
     
@@ -115,8 +123,8 @@ void ShaderProgram::setFragmentShaderCode(const char *fragment_shader_code){
     this->fragment_shader_code = getsafestrcopy(fragment_shader_code);
 }
 
-void ShaderProgram::ensureUsed() const{
-	if(used != this) {
+void ShaderProgram::use(bool force) const{
+	if(used != this || force) {
 		used = this;
 		glUseProgram(program_id);
 	}
@@ -170,13 +178,13 @@ ShaderProgram * ShaderProgram::fromFileLocations(
 	return &p;
 }
 
-void ShaderProgram::initialize(bool useStandarts) throw (ShaderCompileException){
+void ShaderProgram::initialize() throw (ShaderCompileException){
 	if(program_id == -1 || getServerInfo(GL_LINK_STATUS) != GL_TRUE) {
 		throw ShaderCompileException("Can not initialize the program before it is compiled");
 	}
 	try{
-		if(useStandarts) manager.loadStandards();
-		manager.loadVariables(getActiveUniformList(),getActiveAttributeList());
+
+		manager.loadUniforms(getActiveUniformList());
 	}catch(const ShaderVariableException & e) {
 		throw ShaderCompileException(e.getMessage());
 	}
@@ -198,16 +206,9 @@ void ShaderProgram::validate() throw (OpenGLException) {
 	}
 }
 
-void ShaderProgram::attachAttribute(const AttributeDescription & description, const ArrayBuffer & array) const{
-	ensureUsed();
-	const Attribute * a = manager.getAttribute(description);
-	if(!a) return;
-	array.attach(a->getIndex());
-}
-
 
 void ShaderProgram::attachUniform(const UniformDescription & description, const glm::mat4 & a) const{
-	ensureUsed();
+	use();
 	const Uniform * u = manager.getUniform(description);
 	if(!u) return;
 	assert(u->getType() == GL_FLOAT_MAT4);
@@ -215,7 +216,7 @@ void ShaderProgram::attachUniform(const UniformDescription & description, const 
 }
 
 void ShaderProgram::attachUniform(const UniformDescription & description, const glm::vec4 & a) const{
-	ensureUsed();
+	use();
 	const Uniform * u = manager.getUniform(description);
 	if(!u) return;
 	assert(u->getType() == GL_FLOAT_VEC4);
@@ -223,7 +224,7 @@ void ShaderProgram::attachUniform(const UniformDescription & description, const 
 }
 
 void ShaderProgram::attachUniform(const UniformDescription & description, Texture * t) const{
-	ensureUsed();
+	use();
 	const Uniform * u = manager.getUniform(description);
 	if(!u) return;
 	t->attach(*u);

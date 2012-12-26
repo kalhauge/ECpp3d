@@ -11,7 +11,7 @@
 
 #include "ECpp3dUtils.h"
 #include "ECpp3dShaderVariable.h"
-#include "handlers/ECpp3dVertexArray.h"
+#include "handlers/ECpp3dBuffer.h"
 #include "handlers/ECpp3dTexture.h"
 #include <vector>
 #include <string>
@@ -43,10 +43,10 @@ public:
 	ShaderProgram(const char * vertex_shader_code, const char * fragment_shader_code);
 
 	static ShaderProgram * fromProgramLocation(const std::string & program_loc)
-			throw (ShaderCompileException);
+			throw (ShaderCompileException,IOException);
 	static ShaderProgram * fromFileLocations(
 			const std::string &  vert_shader_loc,
-			const std::string & frag_shader_loc) throw (ShaderCompileException);
+			const std::string & frag_shader_loc) throw (ShaderCompileException,IOException);
 
 	void setVertexShaderCode(const char * vertex_sharder_code);
 	void setFragmentShaderCode(const char * fragment_shader_code);
@@ -70,7 +70,7 @@ public:
 	void attachUniform(const UniformDescription & description, Texture * a) const;
 
 
-	void attachAttribute(const AttributeDescription & description, const VertexArray & array) const;
+	void attachAttribute(const AttributeDescription & description, const ArrayBuffer & array) const;
 
 	void ensureUsed() const;
 

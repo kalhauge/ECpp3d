@@ -10,6 +10,8 @@
 
 #include "ECpp3dUtils.h";
 #include "handlers/ECpp3dBuffer.h"
+#include "ECpp3dShaderVariable.h"
+#include "ECpp3dShaderProgram.h"
 #include <vector>
 #include <glm/glm.hpp>
 namespace ECpp3d{
@@ -20,29 +22,32 @@ typedef std::vector<VertexArray*> VertexArrays;
 
 class VertexArray : public OpenGLHandler {
 protected:
-	GLsizei vert_size;
-	GLint number_of_vertices;
-	ArrayBuffer & buffer;
+
+	typedef std::pair<const AttributeDescription *,const ArrayBuffer*> VertexArrayData;
+
+	GLint numberOfVerts;
+	std::vector<VertexArrayData > buffers;
 	static const VertexArray * bound;
-	void ensureBound() const;
+	void bind(bool force = false) const;
+	static void unbind();
 public:
 
 	static VertexArrays generateVertexArrays(GLsizei size);
 	static VertexArray * generateVertexArray();
 
 	virtual ~VertexArray();
-	VertexArray(ArrayBuffer * const buffer,GLuint location)
-		: OpenGLHandler(location), buffer(*buffer) {
-		vert_size = 0;
-		number_of_vertices = 0;
+	VertexArray(GLuint location)
+		: OpenGLHandler(location){
+		numberOfVerts = 0;
 	}
 
-	void initialize(int vector_size,int size);
-	void initialize(int vector_size,int size,const GLfloat * data);
+	void add(const AttributeDescription & desc,const ArrayBuffer * buffer);
+	void initialize(GLsizei numberOfVerts);
 
 	void finalize();
 	void validate() const throw (OpenGLException);
-	void attach(int pos) const;
+	void attachTo(ShaderProgram & program) const;
+	const std::string toString() const;
 };
 
 }

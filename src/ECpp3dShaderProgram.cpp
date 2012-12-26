@@ -142,7 +142,7 @@ std::vector<Attribute> ShaderProgram::getActiveAttributeList() {
 	return attributes;
 }
 
-std::string getFileContent(const std::string & filename) {
+std::string getFileContent(const std::string & filename) throw (IOException) {
 	std::ifstream file(filename.c_str());
 	if(file) {
 		std::string a;
@@ -151,18 +151,18 @@ std::string getFileContent(const std::string & filename) {
 		file.seekg(0,std::ios::beg);
 		file.read(&a[0],a.size());
 		return a;
-	} throw Exception("No file found: " + filename);
+	} else throw IOException("No file found: " + filename);
 
 }
 
-ShaderProgram * ShaderProgram::fromProgramLocation(const std::string & program_loc) throw (ShaderCompileException) {
+ShaderProgram * ShaderProgram::fromProgramLocation(const std::string & program_loc) throw (ShaderCompileException,IOException) {
 	return fromFileLocations(program_loc + ".vs", program_loc + ".fs");
 }
 
 
 ShaderProgram * ShaderProgram::fromFileLocations(
 		const std::string &  vert_shader_loc,
-		const std::string & frag_shader_loc) throw (ShaderCompileException){
+		const std::string & frag_shader_loc) throw (ShaderCompileException,IOException){
 	ShaderProgram & p = *(new ShaderProgram());
 	p.setVertexShaderCode(getFileContent(vert_shader_loc).c_str());
 	p.setFragmentShaderCode(getFileContent(frag_shader_loc).c_str());
@@ -198,7 +198,7 @@ void ShaderProgram::validate() throw (OpenGLException) {
 	}
 }
 
-void ShaderProgram::attachAttribute(const AttributeDescription & description, const VertexArray & array) const{
+void ShaderProgram::attachAttribute(const AttributeDescription & description, const ArrayBuffer & array) const{
 	ensureUsed();
 	const Attribute * a = manager.getAttribute(description);
 	if(!a) return;

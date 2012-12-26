@@ -9,6 +9,7 @@
 #include <iostream>
 #include <ECpp3d.h>
 #include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 
 #define GLFW_INCLUDE_GL3
 #define GLFW_NO_GLU
@@ -21,11 +22,29 @@ using namespace ECpp3d;
 
 ShaderProgram * program;
 
-static const GLfloat pos[] = {-0.5f,-0.5f,0,0.5f,0.5f,-0.5f};
+static const GLfloat pos[] = {-1 , -1, 0,
+							  -1 ,  1, 0,
+							   1 , -1, 0,
+							   1 , -1, 0,
+							  -1 ,  1, 0,
+							   1 ,  1, 0,
+};
+
+static const GLfloat tex[] = {0 , 0,
+							  0 , 1,
+							  1 , 0,
+							  1 , 0,
+							  0 , 1,
+							  1 , 1,
+};
 
 
-VertexArray * positions;
+VertexArray * rect;
+
+
 Texture * texture;
+glm::mat4 projection;
+glm::mat4 modelview;
 
 void setupGL(){
     glClearColor(1.0f, 0.5f, 0.0f, 1.0f);
@@ -33,8 +52,27 @@ void setupGL(){
     OpenGLContext::initialize();
     OpenGLContext::printspecs(cout);
 
-    positions = VertexArray::generateVertexArray();
-    positions->initialize(2,3,pos);
+    projection = glm::perspective(45.0f,1.0f,1.0f,100.0f);
+
+
+    Buffers arrays = Buffer::generateBuffers(2);
+    ArrayBuffer * positions = new ArrayBuffer(arrays[0]);
+    ArrayBuffer * texCoords = new ArrayBuffer(arrays[1]);
+
+    positions->initialize(pos,6,3,GL_FLOAT,GL_STATIC_DRAW);
+    texCoords->initialize(tex,6,2,GL_FLOAT,GL_STATIC_DRAW);
+
+    rect = VertexArray::generateVertexArray();
+
+    rect->add(AttributeDescription::POSITION,positions);
+    rect->add(AttributeDescription::TEXTURE_COORD_1,texCoords);
+
+    rect->initialize(6);
+
+
+    cout << "Hello " << *texCoords << endl;
+    cout << "Hello " << *positions << endl;
+
     Texture1D::gradient grad;
     grad.push_back(Texture1D::gradvector(0,glm::vec4(1,0,0,1)));
     grad.push_back(Texture1D::gradvector(0.5,glm::vec4(0,0,1,1)));
@@ -45,17 +83,18 @@ void setupGL(){
 
       Texture2D *t = new Texture2D(Texture::generateTexture());
       t->initialize(GL_RGBA,"./crate.jpg");
-//      texture = t;
+      texture = t;
 
-      program = ShaderProgram::fromProgramLocation("./simple1D");
+      program = ShaderProgram::fromProgramLocation("./simple");
       program->initialize();
 
       cout << program->getNumberOfActiveUniforms() << endl;
 
-      program->attachUniform(UniformDescription::MVP_MATRIX,glm::mat4());
+      program->attachUniform(UniformDescription::MVP_MATRIX,projection * modelview);
+
       program->attachUniform(UniformDescription::COLOR,glm::vec4(1.0f,0.5f,0.2f,1.0f));
       program->attachUniform(UniformDescription::COLOR_TEXTURE,texture);
-      program->attachAttribute(AttributeDescription::POSITION,*positions);
+      rect->attachTo(*program);
 
       cout << "Uniforms [";
       vector<Uniform> uniforms = program->getActiveUniformList();
@@ -67,7 +106,7 @@ void setupGL(){
       copy(attributes.begin(),attributes.end(),ostream_iterator<Attribute>(cout, ", "));
       cout << "]" << endl;
 
-      positions->validate();
+      rect->validate();
       program->validate();
       OpenGLContext::checkForErrors();
 
@@ -98,8 +137,14 @@ int main(int argc, char ** argv)
     	f[0] = i; f[1] = i; f[2] = 0;
     	glClearColor(f[0],f[1],f[2],f[3]);
     	glClear(GL_COLOR_BUFFER_BIT);
+
+        modelview = glm::mat4();
+        modelview = glm::translate(modelview,glm::vec3(0.0f,0.0f,-5.0f));
+        modelview = glm::rotate(modelview,360.0f*i,glm::vec3(0.0f,1.0f,0.0f));
+        program->attachUniform(UniformDescription::MVP_MATRIX,projection * modelview);
+
     	program->ensureUsed();
-    	glDrawArrays(GL_TRIANGLES,0,3);
+    	glDrawArrays(GL_TRIANGLES,0,6);
     	OpenGLContext::checkForErrors();
     	glfwSwapBuffers();
     }

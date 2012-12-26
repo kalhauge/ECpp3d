@@ -33,6 +33,8 @@ public:
 
 	static void free(const Sampler * sampler);
 
+	static GLsizei getSizeOf(GLenum e);
+
 	static GLint getInteger(GLenum e);
 
 	static GLuint getMaxCombinedTextureImageUnits();

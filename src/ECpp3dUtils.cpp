@@ -59,6 +59,10 @@ const std::string OpenGLInvalidEnumException::getMessage() const {
 	return "<OpenGLInvalidEnumException>";
 }
 
+const std::string OpenGLInvalidValueException::getMessage() const {
+	return "<OpenGLInvalidValueException>";
+}
+
 void OpenGLHandler::finalize(Handlers * const handlers) {
 	for(int i = 0; i < handlers->size(); ++i) {
 		(*handlers)[i]->finalize();

@@ -31,14 +31,15 @@ Buffer * Buffer::generateBuffer(){
 
 const std::string Buffer::toString() const {
 	std::stringstream s;
-	s << "<Buffer: location: " << location << " size: " << size << " usage: " << usage << ">";
+	s << "<Buffer at [" << location << "] - size: " << size << " usage: " << usage << ">";
 	return s.str();
 }
 
-void Buffer::initialize(GLenum target, const GLvoid * data,GLsizeiptr size, GLenum usage) {
-	this->size = size;
+void Buffer::initialize(GLenum target, const GLvoid * data,GLsizeiptr size,GLenum type, GLenum usage) {
+	this->type = type;
+	this->size = size * OpenGLContext::getSizeOf(type);
 	this->usage = usage;
-	glBufferData(target,size,data,usage);
+	glBufferData(target,this->size,data,usage);
 }
 
 GLint Buffer::getServerInfo(GLenum target, GLenum e) const{
@@ -48,7 +49,7 @@ GLint Buffer::getServerInfo(GLenum target, GLenum e) const{
 }
 
 GLint ArrayBuffer::getServerInfo(GLenum e) const{
-	ensureBound();
+	bind();
 	return Buffer::getServerInfo(GL_ARRAY_BUFFER,e);
 
 }
@@ -74,24 +75,28 @@ void Buffer::setData(GLenum target, GLintptr at, const GLvoid * data, GLsizei si
 	glBufferSubData(target,at,size,data);
 }
 
-void ArrayBuffer::initialize(const GLvoid * data,GLsizeiptr size,GLenum hint){
-	ensureBound();
-	Buffer::initialize(GL_ARRAY_BUFFER,data,size,hint);
+void ArrayBuffer::initialize(const GLvoid * data,GLsizeiptr numberOfVerts,GLsizeiptr vertSize,GLenum type,GLenum hint){
+	bind();
+	this->vertSize = vertSize;
+	this->numberOfVerts = numberOfVerts;
+	Buffer::initialize(GL_ARRAY_BUFFER,data,numberOfVerts*vertSize,type,hint);
 }
 
 void ArrayBuffer::setData(GLintptr at, const GLvoid * data, GLsizei size) {
-	ensureBound();
+	bind();
 	Buffer::setData(GL_ARRAY_BUFFER,at,data,size);
 }
 
-void ArrayBuffer::bind() const {
-	bound = this;
-	glBindBuffer(GL_ARRAY_BUFFER,location);
+void ArrayBuffer::attach(int location) const{
+	bind();
+	glEnableVertexAttribArray(location);
+	glVertexAttribPointer(location,vertSize,type,false,0,0);
 }
 
-void ArrayBuffer::ensureBound() const{
-	if(bound != this) {
-		bind();
+void ArrayBuffer::bind(bool force) const{
+	if(bound != this || force) {
+		bound = this;
+		glBindBuffer(GL_ARRAY_BUFFER,location);
 	}
 }
 

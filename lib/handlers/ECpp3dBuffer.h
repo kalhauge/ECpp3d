@@ -21,18 +21,20 @@ typedef std::vector<ArrayBuffer*> ArrayBuffers;
 class Buffer : public OpenGLHandler {
 protected:
 	GLsizeiptr size;
+	GLenum type;
 	GLenum usage;
 	void setData(GLenum target, GLintptr at, const GLvoid * data, GLsizei size);
 
 	Buffer(GLuint location) : OpenGLHandler(location) {
 		this->size = 0;
 		this->usage = 0;
+		this->type = 0;
 	}
 public:
 	static Buffers generateBuffers(GLsizei number);
 	static Buffer * generateBuffer();
 
-	virtual void initialize(GLenum target, const GLvoid * data,GLsizeiptr size, GLenum usage);
+	virtual void initialize(GLenum target, const GLvoid * data,GLsizeiptr size, GLenum type, GLenum usage);
 	virtual void finalize();
 	virtual void validate() const throw (OpenGLException) {};
 
@@ -43,15 +45,18 @@ public:
 class ArrayBuffer : public Buffer {
 	static const GLuint target = GL_ARRAY_BUFFER;
 	static const ArrayBuffer * bound;
-	void ensureBound() const;
+	void bind(bool force = false) const;
+	GLsizeiptr numberOfVerts;
+	GLsizeiptr vertSize;
 public:
 	ArrayBuffer(const Buffer * buffer) : Buffer(buffer->getLocation()) {
 		delete buffer;
 	};
-	void initialize(const GLvoid * data,GLsizeiptr size,GLenum hint);
+	void initialize(const GLvoid * data, GLsizeiptr numberOfVerts,GLsizeiptr vertSize, GLenum type, GLenum hint);
 	void setData(GLintptr at, const GLvoid * data, GLsizei size);
 	void validate() const throw (OpenGLException);
-	void bind() const;
+
+	void attach(int location) const;
 
 	GLint getServerInfo(GLenum e) const;
 };

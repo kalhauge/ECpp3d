@@ -68,7 +68,7 @@ public:
 class AttributeDescription : public VariableDescription {
 	void init(const std::string & name, const std::string & description);
 public:
-	static AttributeDescription POSITION,COLOR,NORMAL;
+	static AttributeDescription POSITION,COLOR,NORMAL,TEXTURE_COORD_1;
 
 	AttributeDescription(const AttributeDescription & des);
 	AttributeDescription(const std::string & name, const std::string & description);

@@ -74,6 +74,8 @@ void ShaderVariableManager::loadStandards() {
 	registerAttribute(AttributeDescription::POSITION);
 	registerAttribute(AttributeDescription::COLOR);
 	registerAttribute(AttributeDescription::NORMAL);
+	registerAttribute(AttributeDescription::TEXTURE_COORD_1);
+
 }
 
 const Uniform * ShaderVariableManager::getUniform(int variable_enum) const {
@@ -183,6 +185,7 @@ UniformDescription UniformDescription::COLOR_TEXTURE = UniformDescription("uColo
 
 AttributeDescription AttributeDescription::POSITION = AttributeDescription("vPosition");
 AttributeDescription AttributeDescription::COLOR = AttributeDescription("vColor");
+AttributeDescription AttributeDescription::TEXTURE_COORD_1 = AttributeDescription("vTexCoord1");
 AttributeDescription AttributeDescription::NORMAL = AttributeDescription("vNormal");
 }
 

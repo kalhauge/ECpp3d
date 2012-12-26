@@ -32,6 +32,8 @@ void OpenGLContext::checkForErrors() throw (OpenGLException) {
 		throw OpenGLInvalidOperationException();
 	case GL_INVALID_ENUM:
 			throw OpenGLInvalidEnumException();
+	case GL_INVALID_VALUE:
+			throw OpenGLInvalidValueException();
 	default: throw OpenGLException();
 	}
 }
@@ -60,6 +62,16 @@ void OpenGLContext::resetSamplers() {
 void OpenGLContext::free(const Sampler * sampler) {
 	freeSamplers.insert(sampler);
 }
+
+GLsizei OpenGLContext::getSizeOf(GLenum e) {
+	switch (e) {
+	case GL_FLOAT 	: return 4;
+	case GL_INT 	: return 4;
+	case GL_BYTE 	: return 1;
+	default			: return 0;
+	}
+}
+
 }
 
 

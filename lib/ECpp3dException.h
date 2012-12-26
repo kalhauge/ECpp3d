@@ -31,6 +31,12 @@ public:
     const std::string toString() const {return getMessage();}
 };
 
+class IOException :public Exception {
+public:
+	 IOException() {}
+	 IOException(const std::string & message) : Exception(message) {}
+};
+
 class NotInitializedException : public Exception {
 	const Object * object;
 public:
@@ -49,6 +55,12 @@ public:	const std::string getMessage() const;
 class OpenGLInvalidOperationException : public OpenGLException {
 public: const std::string getMessage() const;
 };
+
+
+class OpenGLInvalidValueException : public OpenGLException {
+public: const std::string getMessage() const;
+};
+
 
 class OpenGLInvalidEnumException :public OpenGLException {
 public: const std::string getMessage() const;

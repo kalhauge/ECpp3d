@@ -2,10 +2,11 @@
 uniform mat4 mvpMatrix;
 
 in vec4 vPosition;
-out vec3 position;
+in vec2 vTexCoord1;
+out vec2 tex;
 
 void main()
 {
-gl_Position = mvpMatrix * vPosition;
-position = (mvpMatrix * vPosition).xyz;
+    gl_Position = mvpMatrix * vPosition;
+    tex = vTexCoord1;
 }

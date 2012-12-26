@@ -138,14 +138,14 @@ GLenum Texture2D::getBindType() const{
 	return bindtype;
 }
 
-void Texture2D::initialize(GLint internalformat,const std::string & filename) {
+void Texture2D::initialize(GLint internalformat,const std::string & filename) throw (IOException) {
 	struct jpeg_decompress_struct cinfo;
 	struct jpeg_error_mgr jerr;
 
 	JSAMPROW row_pointer[1];
 
 	FILE * infile = fopen(filename.c_str(),"rb");
-	if(!infile) throw Exception("Could not find file: " + filename);
+	if(!infile) throw IOException("Could not find file: " + filename);
 
 	cinfo.err = jpeg_std_error(&jerr);
 	jpeg_create_decompress((j_decompress_ptr) &cinfo);

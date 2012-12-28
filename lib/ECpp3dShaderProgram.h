@@ -26,13 +26,16 @@ public:
 
 
 class ShaderProgram : public Object {
-	ShaderVariableManager manager;
-
 	GLuint vertex_shader_id, fragment_shader_id;
 	GLchar * vertex_shader_code, * fragment_shader_code;
 	GLuint vertex_shader_length, fragment_shader_length;
 
 	GLuint program_id;
+
+	std::map<int,Uniform*> uniforms;
+	void addUniform(const Uniform & uniform) throw (ShaderVariableDoesNotExistException);
+	void loadUniforms() throw (ShaderVariableDoesNotExistException);
+	const Uniform * getUniform(const UniformDescription & desc) const;
 
 	static GLuint compileShader(const char *  code,GLint length,GLenum type) throw (ShaderCompileException);
 	const static ShaderProgram * used;
@@ -42,9 +45,9 @@ public:
 	ShaderProgram();
 	ShaderProgram(const char * vertex_shader_code, const char * fragment_shader_code);
 
-	static ShaderProgram * fromProgramLocation(const std::string & program_loc)
+	static ShaderProgram * fromPath(const std::string & program_loc)
 			throw (ShaderCompileException,IOException);
-	static ShaderProgram * fromFileLocations(
+	static ShaderProgram * fromPath(
 			const std::string &  vert_shader_loc,
 			const std::string & frag_shader_loc) throw (ShaderCompileException,IOException);
 
@@ -59,12 +62,10 @@ public:
 	GLint getNumberOfActiveUniforms() const;
 	GLint getNumberOfActiveAttributes() const;
 
-	ShaderVariableManager & getVariableManager() {return manager;};
-
 	void initialize() throw (ShaderCompileException);
 	void validate() throw (OpenGLException);
 
-	void printVariables(std::ostream & o);
+	void printActiveVariables(std::ostream & o);
 
 	void attachUniform(const UniformDescription & description, const glm::vec4 & a) const;
 	void attachUniform(const UniformDescription & description, const glm::mat4 & a) const;

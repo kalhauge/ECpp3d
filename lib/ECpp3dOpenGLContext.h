@@ -20,6 +20,22 @@ class OpenGLContext {
 	static std::set<const Sampler*> freeSamplers;
 	static ShaderVariableManager manager;
 public:
+
+	static const UniformDescription & U(const std::string & name) throw (ShaderVariableDoesNotExistException);
+	static const UniformDescription & U(const Uniform & uniform) throw (ShaderVariableDoesNotExistException);
+
+	static const AttributeDescription & A(const std::string & name) throw (ShaderVariableDoesNotExistException);
+	static const OutputDescription & O(const std::string & name) throw (ShaderVariableDoesNotExistException);
+
+	static void load(const AttributeDescription & v) throw (ShaderVariableDoesExistException);
+	static void load(const UniformDescription & v) throw (ShaderVariableDoesExistException);
+	static void load(const OutputDescription & v) throw (ShaderVariableDoesExistException);
+	static void loadStandardVariableDescription() throw (ShaderVariableDoesExistException);
+
+	static const AttributeDescriptions & getAttributeDescriptions();
+	static const UniformDescriptions & getUniformDescriptions();
+	static const OutputDescriptions & getOutputDescriptions();
+
 	static void printspecs(std::ostream & out);
 	static void checkForErrors() throw (OpenGLException);
 	static bool isInitialized() {return initialized;}

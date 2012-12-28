@@ -8,6 +8,7 @@
 
 #include "ECpp3dShaderProgram.h"
 #include "handlers/ECpp3dTexture.h"
+#include "ECpp3dOpenGLContext.h"
 #include <string>
 #include <fstream>
 #include <iterator>
@@ -42,7 +43,6 @@ ShaderProgram::ShaderProgram(const char * vertex_shader_code,const char * fragme
 }
 
 GLboolean ShaderProgram::compile(bool useStandarts) throw (ShaderCompileException){
-	if(useStandarts) manager.loadStandards();
 
     GLint status;
     vertex_shader_id = compileShader(vertex_shader_code,vertex_shader_length,GL_VERTEX_SHADER);
@@ -53,11 +53,13 @@ GLboolean ShaderProgram::compile(bool useStandarts) throw (ShaderCompileExceptio
     glAttachShader(program_id, vertex_shader_id);
     glAttachShader(program_id, fragment_shader_id);
 
-    glBindFragDataLocation(program_id,0,"out0");
-    glBindFragDataLocation(program_id,1,"out1");
-    glBindFragDataLocation(program_id,2,"out2");
+    OutputDescriptions o = OpenGLContext::getOutputDescriptions();
 
-    AttributeDescriptions a = manager.getAttributeDescriptions();
+    for(OutputDescriptions::iterator i = o.begin(); i != o.end(); ++i){
+    	glBindFragDataLocation(program_id,(*i)->getId(),(*i)->getName().c_str());
+     }
+
+    AttributeDescriptions a = OpenGLContext::getAttributeDescriptions();
 
     for(AttributeDescriptions::iterator i = a.begin(); i != a.end(); ++i){
     	glBindAttribLocation(program_id,(*i)->getId(),(*i)->getName().c_str());
@@ -133,6 +135,29 @@ void ShaderProgram::use(bool force) const{
 	}
 }
 
+
+void ShaderProgram::addUniform(const Uniform & uniform) throw (ShaderVariableDoesNotExistException){
+	UniformDescription a = OpenGLContext::U(uniform);
+	uniforms[a.getId()] = new Uniform(uniform);
+}
+
+void ShaderProgram::loadUniforms() throw (ShaderVariableDoesNotExistException){
+	std::vector<Uniform> u = getActiveUniformList();
+	for(std::vector<Uniform>::iterator i = u.begin(); i != u.end(); ++i) {
+		addUniform(*i);
+	}
+}
+
+/* OBS
+ * Returns 0 if not found
+ */
+const Uniform * ShaderProgram::getUniform(const UniformDescription & desc) const {
+	std::map<int,Uniform*>::const_iterator i = uniforms.find(desc.getId());
+	if(i != uniforms.end()) {
+		return i->second;
+	} else return 0;
+}
+
 std::vector<Uniform> ShaderProgram::getActiveUniformList() {
 	GLint length = getNumberOfActiveUniforms();
 	std::vector<Uniform> uniforms;
@@ -166,12 +191,12 @@ std::string getFileContent(const std::string & filename) throw (IOException) {
 
 }
 
-ShaderProgram * ShaderProgram::fromProgramLocation(const std::string & program_loc) throw (ShaderCompileException,IOException) {
-	return fromFileLocations(program_loc + ".vs", program_loc + ".fs");
+ShaderProgram * ShaderProgram::fromPath(const std::string & program_loc) throw (ShaderCompileException,IOException) {
+	return fromPath(program_loc + ".vs", program_loc + ".fs");
 }
 
 
-ShaderProgram * ShaderProgram::fromFileLocations(
+ShaderProgram * ShaderProgram::fromPath(
 		const std::string &  vert_shader_loc,
 		const std::string & frag_shader_loc) throw (ShaderCompileException,IOException){
 	ShaderProgram & p = *(new ShaderProgram());
@@ -186,8 +211,7 @@ void ShaderProgram::initialize() throw (ShaderCompileException){
 		throw ShaderCompileException("Can not initialize the program before it is compiled");
 	}
 	try{
-
-		manager.loadUniforms(getActiveUniformList());
+		loadUniforms();
 	}catch(const ShaderVariableException & e) {
 		throw ShaderCompileException(e.getMessage());
 	}
@@ -212,7 +236,7 @@ void ShaderProgram::validate() throw (OpenGLException) {
 
 void ShaderProgram::attachUniform(const UniformDescription & description, const glm::mat4 & a) const{
 	use();
-	const Uniform * u = manager.getUniform(description);
+	const Uniform * u = getUniform(description);
 	if(!u) return;
 	assert(u->getType() == GL_FLOAT_MAT4);
 	glUniformMatrix4fv(u->getIndex(),1,GL_FALSE,glm::value_ptr(a));
@@ -220,7 +244,7 @@ void ShaderProgram::attachUniform(const UniformDescription & description, const 
 
 void ShaderProgram::attachUniform(const UniformDescription & description, const glm::vec4 & a) const{
 	use();
-	const Uniform * u = manager.getUniform(description);
+	const Uniform * u = getUniform(description);
 	if(!u) return;
 	assert(u->getType() == GL_FLOAT_VEC4);
 	glUniform4fv(u->getIndex(),1,glm::value_ptr(a));
@@ -228,7 +252,7 @@ void ShaderProgram::attachUniform(const UniformDescription & description, const 
 
 void ShaderProgram::attachUniform(const UniformDescription & description, const GLint & a) const{
 	use();
-	const Uniform * u = manager.getUniform(description);
+	const Uniform * u = getUniform(description);
 	if(!u) return;
 	assert(u->getType() == GL_INT);
 	glUniform1i(u->getIndex(),a);
@@ -236,13 +260,13 @@ void ShaderProgram::attachUniform(const UniformDescription & description, const 
 
 void ShaderProgram::attachUniform(const UniformDescription & description, Texture * t) const{
 	use();
-	const Uniform * u = manager.getUniform(description);
+	const Uniform * u = getUniform(description);
 	if(!u) return;
 	t->attach(*u);
 }
 
 
-void ShaderProgram::printVariables(std::ostream & o) {
+void ShaderProgram::printActiveVariables(std::ostream & o) {
     o << "Uniforms [";
     std::vector<Uniform> uniforms = this->getActiveUniformList();
     std::copy(uniforms.begin(),uniforms.end(),std::ostream_iterator<Uniform>(o, ", "));

@@ -9,6 +9,14 @@
 #include <sstream>
 namespace ECpp3d {
 
+
+Uniform::Uniform(const Uniform & uniform) {
+	index = uniform.index;
+	size = uniform.size;
+	type = uniform.type;
+	name = uniform.name;
+}
+
 Uniform::Uniform(GLuint program_id,GLuint index) {
 	char * buffer = new char[128];
 	GLsizei length = 0;
@@ -50,20 +58,27 @@ const std::string Attribute::toString() const {
 	s << "<Attribute " << name << " at [" << index << "]>";
 	return s.str();
 }
-
+template<typename T>
+void registerVariable(std::map<const std::string,const T> & map, std::vector<const T*> & referece, const T & desc) throw (ShaderVariableDoesExistException){
+	typename std::map<const std::string,const T>::iterator i = map.find(desc.getName());
+	if(i != map.end()) throw ShaderVariableDoesExistException(desc,i->second);
+	map.insert(std::pair<std::string,T>(desc.getName(),desc));
+	referece.push_back(&map.at(desc.getName()));
+}
 
 void ShaderVariableManager::registerUniform(const UniformDescription & desc) throw (ShaderVariableDoesExistException){
-	uniform_desc_map::iterator i = uniform_ids.find(desc.getName());
-	if(i != uniform_ids.end())
-		throw ShaderVariableDoesExistException(desc,i->second);
-		uniform_ids.insert(uniform_desc_entry(desc.getName(),desc));
+	registerVariable(uniform_ids,uniforms,desc);
 }
 
 void ShaderVariableManager::registerAttribute(const AttributeDescription & desc) throw (ShaderVariableDoesExistException){
-	attributes.push_back(&desc);
+	registerVariable(attribute_ids,attributes,desc);
 }
 
-void ShaderVariableManager::loadStandards() {
+void ShaderVariableManager::registerOutput(const OutputDescription & desc) throw (ShaderVariableDoesExistException){
+	registerVariable(output_ids,outputs,desc);
+}
+
+void ShaderVariableManager::loadStandards() throw (ShaderVariableDoesExistException){
 	registerUniform(UniformDescription::MVP_MATRIX);
 	registerUniform(UniformDescription::MV_MATRIX);
 	registerUniform(UniformDescription::COLOR);
@@ -72,39 +87,45 @@ void ShaderVariableManager::loadStandards() {
 	registerAttribute(AttributeDescription::COLOR);
 	registerAttribute(AttributeDescription::NORMAL);
 	registerAttribute(AttributeDescription::TEXTURE_COORD_1);
+	registerOutput(OutputDescription::STDOUT);
 
 }
 
-const Uniform * ShaderVariableManager::getUniform(int variable_enum) const {
-	std::map<int,Uniform>::const_iterator i =  uniforms.find(variable_enum);
-	if(i == uniforms.end()) return 0;
-	return &i->second;
-}
-
-const Uniform * ShaderVariableManager::getUniform(
-		const UniformDescription& desc) const {
-	return getUniform(desc.getId());
-}
 
 
-const AttributeDescriptions ShaderVariableManager::getAttributeDescriptions() const{
+const AttributeDescriptions & ShaderVariableManager::getAttributeDescriptions() const{
 	return attributes;
 }
 
-void ShaderVariableManager::loadUniforms(std::vector<Uniform> in_uniforms) throw (ShaderVariableDoesNotExistException) {
-
-	for(std::vector<Uniform>::iterator u = in_uniforms.begin();
-		u != in_uniforms.end();
-		++u) {
-		uniform_desc_map::iterator i = uniform_ids.find(u->getName());
-		if(i == uniform_ids.end()) throw ShaderVariableDoesNotExistException(u->getName());
-		uniforms.insert(std::pair<int,Uniform>(i->second.getId(),*u));
-	}
+const UniformDescriptions & ShaderVariableManager::getUniformDescriptions() const{
+	return uniforms;
 }
 
+const OutputDescriptions  & ShaderVariableManager::getOutputDescriptions() const{
+	return outputs;
+}
 
+const UniformDescription & ShaderVariableManager::getUniformDescription(const std::string & name) throw (ShaderVariableDoesNotExistException) {
+	uniform_desc_map::const_iterator i = uniform_ids.find(name);
+	if(i != uniform_ids.end()) {
+		return i->second;
+	}else throw ShaderVariableDoesNotExistException(name);
+}
+const AttributeDescription & ShaderVariableManager::getAttributeDescription(const std::string & name) throw (ShaderVariableDoesNotExistException) {
+	attribute_desc_map::const_iterator i = attribute_ids.find(name);
+	if(i != attribute_ids.end()) {
+		return i->second;
+	}else throw ShaderVariableDoesNotExistException(name);
+}
+const OutputDescription & ShaderVariableManager::getOutputDescription(const std::string & name) throw (ShaderVariableDoesNotExistException) {
+	output_desc_map::const_iterator i = output_ids.find(name);
+	if(i != output_ids.end()) {
+		return i->second;
+	}else throw ShaderVariableDoesNotExistException(name);
+}
 static int uniform_counter = 0;
 static int attribute_counter = 0;
+static int output_counter = 0;
 
 UniformDescription::UniformDescription(const UniformDescription & des) {
 	id = des.id;
@@ -113,15 +134,15 @@ UniformDescription::UniformDescription(const UniformDescription & des) {
 }
 
 UniformDescription::UniformDescription(const std::string & name, const std::string & description){
-	init(name,description);
+	initialize(name,description);
 }
 
 
 UniformDescription::UniformDescription(const std::string & name){
-	init(name,"");
+	initialize(name,"");
 }
 
-void UniformDescription::init(const std::string & name, const std::string & description) {
+void UniformDescription::initialize(const std::string & name, const std::string & description) {
 	id = uniform_counter++;
 	this->name = name;
 	this->description = description;
@@ -140,15 +161,15 @@ AttributeDescription::AttributeDescription(const AttributeDescription & des) {
 }
 
 AttributeDescription::AttributeDescription(const std::string & name, const std::string & description){
-	init(name,description);
+	initialize(name,description);
 }
 
 
 AttributeDescription::AttributeDescription(const std::string & name){
-	init(name,"");
+	initialize(name,"");
 }
 
-void AttributeDescription::init(const std::string & name, const std::string & description) {
+void AttributeDescription::initialize(const std::string & name, const std::string & description) {
 	id = attribute_counter++;
 	this->name = name;
 	this->description = description;
@@ -160,6 +181,34 @@ const std::string AttributeDescription::toString() const {
 	return s.str();
 }
 
+OutputDescription::OutputDescription(const OutputDescription & des) {
+	id = des.id;
+	name = std::string(des.name);
+	description = std::string(des.description);
+}
+
+OutputDescription::OutputDescription(const std::string & name, const std::string & description){
+	initialize(name,description);
+}
+
+
+OutputDescription::OutputDescription(const std::string & name){
+	initialize(name,"");
+}
+
+void OutputDescription::initialize(const std::string & name, const std::string & description) {
+	id = output_counter++;
+	this->name = name;
+	this->description = description;
+}
+
+const std::string OutputDescription::toString() const {
+	std::stringstream s;
+	s << "<OutputDescription " << name << " at [" << id << "]>";
+	return s.str();
+}
+
+
 UniformDescription UniformDescription::MVP_MATRIX = UniformDescription("mvpMatrix");
 UniformDescription UniformDescription::MV_MATRIX = UniformDescription("mvMatrix");
 UniformDescription UniformDescription::COLOR = UniformDescription("uColor");
@@ -170,5 +219,7 @@ AttributeDescription AttributeDescription::POSITION = AttributeDescription("vPos
 AttributeDescription AttributeDescription::COLOR = AttributeDescription("vColor");
 AttributeDescription AttributeDescription::TEXTURE_COORD_1 = AttributeDescription("vTexCoord1");
 AttributeDescription AttributeDescription::NORMAL = AttributeDescription("vNormal");
+
+OutputDescription OutputDescription::STDOUT = OutputDescription("stdout");
 }
 

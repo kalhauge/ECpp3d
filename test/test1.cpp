@@ -50,6 +50,7 @@ void setupGL(){
     glClearColor(1.0f, 0.5f, 0.0f, 1.0f);
 
     OpenGLContext::initialize();
+    OpenGLContext::loadStandardVariableDescription();
     OpenGLContext::printspecs(cout);
 
     projection = glm::perspective(45.0f,1.0f,1.0f,100.0f);
@@ -81,17 +82,16 @@ void setupGL(){
       t->initialize(GL_RGBA,"./crate.jpg");
       texture = t;
 
-      program = ShaderProgram::fromProgramLocation("./simple");
+      program = ShaderProgram::fromPath("./simple");
       program->initialize();
 
       cout << program->getNumberOfActiveUniforms() << endl;
 
       program->attachUniform(UniformDescription::MVP_MATRIX,projection * modelview);
-
       program->attachUniform(UniformDescription::COLOR,glm::vec4(1.0f,0.5f,0.2f,1.0f));
       program->attachUniform(UniformDescription::COLOR_TEXTURE,texture);
 
-      program->printVariables(cout);
+      program->printActiveVariables(cout);
 
       rect->validate();
       program->validate();
@@ -99,6 +99,7 @@ void setupGL(){
 
     } catch(Exception & e) {
       cerr << e << endl;
+      exit(-1);
     }
 }
 

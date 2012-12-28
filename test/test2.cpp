@@ -36,6 +36,10 @@ UniformDescription ITERATION("iteration");
 void setupGL() {
 	glClearColor(0,0,1,1);
 	OpenGLContext::initialize();
+	OpenGLContext::loadStandardVariableDescription();
+	OpenGLContext::load(LIMIT);
+	OpenGLContext::load(ITERATION);
+
 	OpenGLContext::printspecs(cout);
 	try {
 
@@ -50,10 +54,9 @@ void setupGL() {
 		color = Texture1D::createLinearGradient(Texture::generateTexture(),512,gradient);
 		color->setWrappingS(GL_CLAMP_TO_EDGE);
 
-		program = ShaderProgram::fromFileLocations("./simple_mandelbrot.vs","./step_mandelbrot.fs");
+		program = ShaderProgram::fromPath("./simple_mandelbrot.vs","./step_mandelbrot.fs");
 
-		program->getVariableManager().registerUniform(LIMIT);
-		program->getVariableManager().registerUniform(ITERATION);
+
 
 		program->initialize();
 		screen->initialize(6);
@@ -62,7 +65,7 @@ void setupGL() {
 		glm::mat4 mvp = glm::translate(glm::scale(glm::mat4(),glm::vec3(1.5f,1.5f,1.5f)),glm::vec3(-0.5f,0,0));
 		program->attachUniform(UniformDescription::MVP_MATRIX,mvp);
 
-		program->printVariables(cout);
+		program->printActiveVariables(cout);
 
 		screen->validate();
 		program->validate();

@@ -31,6 +31,7 @@ public:
 
 class Uniform : public ShaderVariable {
 public:
+	Uniform(const Uniform & uniform);
 	Uniform(GLuint program_id,GLuint index);
 	virtual const std::string toString() const;
 };
@@ -55,7 +56,7 @@ public:
 
 
 class UniformDescription : public VariableDescription {
-	void init(const std::string & name, const std::string & description);
+	void initialize(const std::string & name, const std::string & description);
 public:
 	static UniformDescription MVP_MATRIX,MV_MATRIX,COLOR,COLOR_TEXTURE;
 
@@ -66,7 +67,7 @@ public:
 };
 
 class AttributeDescription : public VariableDescription {
-	void init(const std::string & name, const std::string & description);
+	void initialize(const std::string & name, const std::string & description);
 public:
 	static AttributeDescription POSITION,COLOR,NORMAL,TEXTURE_COORD_1;
 
@@ -76,7 +77,20 @@ public:
 	const std::string toString() const;
 };
 
+
+class OutputDescription : public VariableDescription {
+	void initialize(const std::string & name, const std::string & description);
+public:
+	static OutputDescription STDOUT;
+	OutputDescription(const OutputDescription & des);
+	OutputDescription(const std::string & name, const std::string & description);
+	OutputDescription(const std::string & name);
+	const std::string toString() const;
+};
+
+typedef std::vector<const UniformDescription*> UniformDescriptions;
 typedef std::vector<const AttributeDescription*> AttributeDescriptions;
+typedef std::vector<const OutputDescription*> OutputDescriptions;
 
 class ShaderVariableException : public Exception {
 
@@ -98,17 +112,35 @@ protected:
 	typedef std::map<const std::string, const UniformDescription> uniform_desc_map;
 	typedef std::pair<const std::string, const UniformDescription> uniform_desc_entry;
 
+	typedef std::map<const std::string, const AttributeDescription> attribute_desc_map;
+	typedef std::pair<const std::string, const AttributeDescription> attribute_desc_entry;
+
+	typedef std::map<const std::string, const OutputDescription> output_desc_map;
+	typedef std::pair<const std::string, const OutputDescription> output_desc_entry;
+
 	uniform_desc_map uniform_ids;
+	attribute_desc_map attribute_ids;
+	output_desc_map output_ids;
+
+	std::vector<const UniformDescription*> uniforms;
+	std::vector<const OutputDescription*> outputs;
 	std::vector<const AttributeDescription*> attributes;
-	std::map<int,Uniform> uniforms;
 public:
 	void registerUniform(const UniformDescription & description) throw (ShaderVariableDoesExistException);
 	void registerAttribute(const AttributeDescription & description) throw (ShaderVariableDoesExistException);
-	const Uniform * getUniform(int variable_enum) const;
-	const Uniform * getUniform(const UniformDescription & desc) const;
-	const AttributeDescriptions getAttributeDescriptions() const;
-	void loadStandards();
-	void loadUniforms(std::vector<Uniform> uniforms) throw (ShaderVariableDoesNotExistException);
+	void registerOutput(const OutputDescription & description) throw (ShaderVariableDoesExistException);
+
+	void loadStandards() throw(ShaderVariableDoesExistException);
+
+	const UniformDescription & getUniformDescription(const std::string & name) throw (ShaderVariableDoesNotExistException);
+	const AttributeDescription & getAttributeDescription(const std::string & name) throw (ShaderVariableDoesNotExistException);
+	const OutputDescription & getOutputDescription(const std::string & name) throw (ShaderVariableDoesNotExistException);
+
+
+	const UniformDescriptions & getUniformDescriptions() const;
+	const AttributeDescriptions & getAttributeDescriptions() const;
+	const OutputDescriptions & getOutputDescriptions() const;
+
 };
 
 

@@ -18,4 +18,5 @@
 #include "handlers/ECpp3dBuffer.h"
 #include "handlers/ECpp3dVertexArray.h"
 #include "handlers/ECpp3dTexture.h"
+#include "handlers/ECpp3dFramebuffer.h"
 #endif

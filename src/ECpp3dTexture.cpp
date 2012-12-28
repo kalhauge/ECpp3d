@@ -208,4 +208,8 @@ void Texture2D::initialize(GLint internalformat, GLsizei width, GLsizei height, 
 	setMaxLevel(0);
 }
 
+void Texture2D::initialize(GLint internalformat, GLsizei width, GLsizei height) {
+	initialize(internalformat,width,height,GL_RGBA,GL_FLOAT,0);
+}
+
 }

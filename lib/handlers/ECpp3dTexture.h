@@ -105,6 +105,7 @@ public:
 	GLenum getBindType() const;
 	void initialize(GLint internalformat,const std::string & filename) throw (IOException);
 	void initialize(GLint internalformat, GLsizei width, GLsizei height, GLenum format, GLenum type, const GLvoid *pixels);
+	void initialize(GLint internalformat, GLsizei width, GLsizei height);
 };
 
 }

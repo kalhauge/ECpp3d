@@ -43,6 +43,10 @@ VertexArray * rect;
 
 
 Texture * texture;
+
+Framebuffer * offscreen;
+Texture2D * offscreen_image;
+
 glm::mat4 projection;
 glm::mat4 modelview;
 
@@ -81,6 +85,14 @@ void setupGL(){
       Texture2D *t = new Texture2D(Texture::generateTexture());
       t->initialize(GL_RGBA,"./crate.jpg");
       texture = t;
+
+      offscreen_image = new Texture2D(Texture::generateTexture());
+      offscreen_image->initialize(GL_RGBA,1024,1024);
+
+      offscreen = Framebuffer::generateFramebuffer();
+
+      offscreen->attach(0,*offscreen_image);
+      offscreen->validate();
 
       program = ShaderProgram::fromPath("./simple");
       program->initialize();
@@ -121,6 +133,7 @@ int main(int argc, char ** argv)
     glfwSetWindowTitle("GLFW Testing");
 
     GLfloat f[] = {0,0,0,1};
+
     while(true) for(GLclampf i = 0; i < 1; i += 1.0/1000){
     	f[0] = i; f[1] = i; f[2] = 0;
     	glClearColor(f[0],f[1],f[2],f[3]);
@@ -131,6 +144,8 @@ int main(int argc, char ** argv)
         modelview = glm::rotate(modelview,360.0f*i,glm::vec3(0.0f,1.0f,0.0f));
         program->attachUniform(UniformDescription::MVP_MATRIX,projection * modelview);
 
+        offscreen->bind();
+        glViewport(0,0,1024,1024);
     	program->use();
     	rect->bind();
     	glDrawArrays(GL_TRIANGLES,0,6);

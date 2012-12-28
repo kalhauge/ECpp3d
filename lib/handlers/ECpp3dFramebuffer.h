@@ -9,7 +9,9 @@
 #define ECPP3DFRAMEBUFFER_H_
 
 #include "ECpp3dUtils.h"
+#include "ECpp3dShaderVariable.h"
 #include "handlers/ECpp3dTexture.h"
+#include <map>
 namespace ECpp3d {
 class Framebuffer;
 
@@ -18,14 +20,15 @@ typedef std::vector<Framebuffer*> Framebuffers;
 class Framebuffer : public OpenGLHandler{
 	static const Framebuffer * const SCREEN;
 	static const Framebuffer * bound;
-	void ensureBound() const;
 	Framebuffer(int location) : OpenGLHandler(location) {};
 public:
+	void bind(bool force = false) const;
+
 	static Framebuffers generateFramebuffers(GLsizei number);
 	static Framebuffer * generateFramebuffer();
 
 
-	void attach(std::string name, Texture * texture);
+	void attach(int i,const Texture2D & texture);
 
 	void validate() const throw (OpenGLException);
 	void finalize() {};

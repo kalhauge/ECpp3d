@@ -81,6 +81,17 @@ void Texture::setMinimizeMethod(GLenum method) {
 }
 
 
+void Texture::setWrappingS(GLenum method) {
+	setParameter(GL_TEXTURE_WRAP_S,method);
+}
+void Texture::setWrappingT(GLenum method) {
+	setParameter(GL_TEXTURE_WRAP_T,method);
+}
+void Texture::setWrappingR(GLenum method) {
+	setParameter(GL_TEXTURE_WRAP_R,method);
+}
+
+
 // Sampler
 
 void Sampler::ensureActive() const{
@@ -137,6 +148,8 @@ Texture1D * Texture1D::createLinearGradient(Texture * texture,int size, const gr
 GLenum Texture2D::getBindType() const{
 	return bindtype;
 }
+
+
 
 void Texture2D::initialize(GLint internalformat,const std::string & filename) throw (IOException) {
 	struct jpeg_decompress_struct cinfo;

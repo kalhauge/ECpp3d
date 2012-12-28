@@ -69,10 +69,6 @@ void setupGL(){
 
     rect->initialize(6);
 
-
-    cout << "Hello " << *texCoords << endl;
-    cout << "Hello " << *positions << endl;
-
     Texture1D::gradient grad;
     grad.push_back(Texture1D::gradvector(0,glm::vec4(1,0,0,1)));
     grad.push_back(Texture1D::gradvector(0.5,glm::vec4(0,0,1,1)));
@@ -95,15 +91,7 @@ void setupGL(){
       program->attachUniform(UniformDescription::COLOR,glm::vec4(1.0f,0.5f,0.2f,1.0f));
       program->attachUniform(UniformDescription::COLOR_TEXTURE,texture);
 
-      cout << "Uniforms [";
-      vector<Uniform> uniforms = program->getActiveUniformList();
-      copy(uniforms.begin(),uniforms.end(),ostream_iterator<Uniform>(cout, ", "));
-      cout << "]" << endl;
-
-      cout << "Attributes [";
-      vector<Attribute> attributes = program->getActiveAttributeList();
-      copy(attributes.begin(),attributes.end(),ostream_iterator<Attribute>(cout, ", "));
-      cout << "]" << endl;
+      program->printVariables(cout);
 
       rect->validate();
       program->validate();

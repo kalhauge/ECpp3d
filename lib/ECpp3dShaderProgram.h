@@ -64,8 +64,11 @@ public:
 	void initialize() throw (ShaderCompileException);
 	void validate() throw (OpenGLException);
 
+	void printVariables(std::ostream & o);
+
 	void attachUniform(const UniformDescription & description, const glm::vec4 & a) const;
 	void attachUniform(const UniformDescription & description, const glm::mat4 & a) const;
+	void attachUniform(const UniformDescription & description, const GLint & a) const;
 
 	void attachUniform(const UniformDescription & description, Texture * a) const;
 

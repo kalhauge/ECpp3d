@@ -88,7 +88,7 @@ void ArrayBuffer::setData(GLintptr at, const GLvoid * data, GLsizei size) {
 }
 
 void ArrayBuffer::attach(int location) const{
-	bind();
+	bind(true);
 	glEnableVertexAttribArray(location);
 	glVertexAttribPointer(location,vertSize,type,false,0,0);
 }

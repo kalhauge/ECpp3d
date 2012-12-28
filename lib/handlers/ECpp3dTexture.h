@@ -42,6 +42,10 @@ public:
 	void setMaxLevel(GLint level);
 	void setMinimizeMethod(GLenum method);
 	void setMagnifyMethod(GLenum method);
+
+	void setWrappingS(GLenum method);
+	void setWrappingT(GLenum method);
+	void setWrappingR(GLenum method);
 };
 
 inline void Texture::setParameter(GLenum pname, GLint param) {

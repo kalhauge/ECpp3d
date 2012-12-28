@@ -10,6 +10,7 @@
 #include "handlers/ECpp3dTexture.h"
 #include <string>
 #include <fstream>
+#include <iterator>
 #include <glm/gtc/type_ptr.hpp>
 
 
@@ -52,7 +53,9 @@ GLboolean ShaderProgram::compile(bool useStandarts) throw (ShaderCompileExceptio
     glAttachShader(program_id, vertex_shader_id);
     glAttachShader(program_id, fragment_shader_id);
 
-    glBindFragDataLocation(program_id,0,"fragColor");
+    glBindFragDataLocation(program_id,0,"out0");
+    glBindFragDataLocation(program_id,1,"out1");
+    glBindFragDataLocation(program_id,2,"out2");
 
     AttributeDescriptions a = manager.getAttributeDescriptions();
 
@@ -223,6 +226,14 @@ void ShaderProgram::attachUniform(const UniformDescription & description, const 
 	glUniform4fv(u->getIndex(),1,glm::value_ptr(a));
 }
 
+void ShaderProgram::attachUniform(const UniformDescription & description, const GLint & a) const{
+	use();
+	const Uniform * u = manager.getUniform(description);
+	if(!u) return;
+	assert(u->getType() == GL_INT);
+	glUniform1i(u->getIndex(),a);
+}
+
 void ShaderProgram::attachUniform(const UniformDescription & description, Texture * t) const{
 	use();
 	const Uniform * u = manager.getUniform(description);
@@ -230,6 +241,19 @@ void ShaderProgram::attachUniform(const UniformDescription & description, Textur
 	t->attach(*u);
 }
 
+
+void ShaderProgram::printVariables(std::ostream & o) {
+    o << "Uniforms [";
+    std::vector<Uniform> uniforms = this->getActiveUniformList();
+    std::copy(uniforms.begin(),uniforms.end(),std::ostream_iterator<Uniform>(o, ", "));
+    o << "]" << std::endl;
+
+    o << "Attributes [";
+    std::vector<Attribute> attributes = this->getActiveAttributeList();
+    std::copy(attributes.begin(),attributes.end(),std::ostream_iterator<Attribute>(o, ", "));
+    o << "]" << std::endl;
+
+}
 
 }
 

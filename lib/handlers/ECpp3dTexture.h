@@ -38,6 +38,8 @@ public:
 
 	void setParameter(GLenum pname, GLint param);
 
+	const std::string toString() const;
+
 	void setBaseLevel(GLint level);
 	void setMaxLevel(GLint level);
 	void setMinimizeMethod(GLenum method);
@@ -64,6 +66,7 @@ public:
 
 	static Samplers getSamplers();
 	GLuint getActiveId() const;
+	const std::string toString() const;
 
 	GLenum getActiveEnum() const {
 		return GL_TEXTURE0 + getActiveId();

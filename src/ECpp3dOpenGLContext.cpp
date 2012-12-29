@@ -10,6 +10,8 @@
 namespace ECpp3d {
 
 bool OpenGLContext::initialized = false;
+const Area * OpenGLContext::viewport = 0;
+
 Samplers OpenGLContext::samplers = Samplers();
 std::set<const Sampler*> OpenGLContext::freeSamplers = std::set<const Sampler*>();
 
@@ -109,6 +111,24 @@ void OpenGLContext::free(const Sampler * sampler) {
 	freeSamplers.insert(sampler);
 }
 
+
+void OpenGLContext::setViewport(const Area * const viewport){
+	if(OpenGLContext::viewport != viewport) {
+		OpenGLContext::viewport = viewport;
+		glViewport(viewport->x,viewport->y,viewport->width,viewport->height);
+	}
+}
+
+void OpenGLContext::draw(const Framebuffer & buffer,const ShaderProgram & program,const VertexArray & object){
+	buffer.makedrawable();
+	program.use();
+	object.bind();
+}
+
+void OpenGLContext::draw(const Framebuffer * buffer,const ShaderProgram * program,const VertexArray * object) {
+	draw(*buffer,*program,*object);
+}
+
 GLsizei OpenGLContext::getSizeOf(GLenum e) {
 	switch (e) {
 	case GL_FLOAT 	: return 4;
@@ -117,6 +137,8 @@ GLsizei OpenGLContext::getSizeOf(GLenum e) {
 	default			: return 0;
 	}
 }
+
+
 
 }
 

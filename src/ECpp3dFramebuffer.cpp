@@ -6,11 +6,11 @@
  */
 
 #include "handlers/ECpp3dFramebuffer.h"
-
+#include "ECpp3dOpenGLContext.h"
 
 namespace ECpp3d {
 
-const Framebuffer * const Framebuffer::SCREEN = new Framebuffer(0);
+Framebuffer * const Framebuffer::SCREEN = new Framebuffer(0);
 const Framebuffer * Framebuffer::bound = Framebuffer::SCREEN;
 
 Framebuffers Framebuffer::generateFramebuffers(GLsizei number){
@@ -38,9 +38,9 @@ void Framebuffer::bind(bool force) const {
 	}
 }
 
-void Framebuffer::attach(int i,const Texture2D & texture){
+void Framebuffer::attach(int i,const Texture2D * const texture){
 	bind();
-	glFramebufferTexture2D(GL_FRAMEBUFFER,GL_COLOR_ATTACHMENT0 + i,GL_TEXTURE_2D,texture.getLocation(),0);
+	glFramebufferTexture2D(GL_FRAMEBUFFER,GL_COLOR_ATTACHMENT0 + i,GL_TEXTURE_2D,texture->getLocation(),0);
 }
 
 void Framebuffer::validate() const throw (OpenGLException) {
@@ -49,5 +49,18 @@ void Framebuffer::validate() const throw (OpenGLException) {
 		throw OpenGLException();
 }
 
+void Framebuffer::clearColor(const glm::vec4 &color){
+	bind();
+	glClearColor(color.r,color.g,color.b,color.a);
+	glClear(GL_COLOR_BUFFER_BIT);
+}
+void Framebuffer::makedrawable() const {
+	bind();
+	OpenGLContext::setViewport(viewport);
+}
+
+void Framebuffer::setViewport(const Area * const area) {
+	viewport = area;
+}
 }
 

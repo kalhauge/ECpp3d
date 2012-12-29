@@ -80,6 +80,12 @@ void Texture::setMinimizeMethod(GLenum method) {
 	setParameter(GL_TEXTURE_MIN_FILTER,method);
 }
 
+const std::string Texture::toString() const {
+	std::stringstream s;
+	s << "<Texture at ["<< location << "] - sampler: " << sampler <<">";
+	return s.str();
+}
+
 
 void Texture::setWrappingS(GLenum method) {
 	setParameter(GL_TEXTURE_WRAP_S,method);
@@ -100,6 +106,12 @@ void Sampler::ensureActive() const{
 
 GLuint Sampler::getActiveId() const {
 	return activeid;
+}
+
+const std::string Sampler::toString() const {
+	std::stringstream s;
+	s << "<Sampler at ["<< activeid << "]>";
+	return s.str();
 }
 
 Samplers Sampler::getSamplers() {

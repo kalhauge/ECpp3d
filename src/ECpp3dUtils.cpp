@@ -76,5 +76,7 @@ void Object::deleteObjects(Objects * const objects) {
 	}
 }
 
+Area Area::STDSIZE = Area(0,0,256,256);
+Area::Area(GLsizei x, GLsizei y , GLsizei width, GLsizei height) : x(x), y(y) ,width(width), height(height) {}
 }
 

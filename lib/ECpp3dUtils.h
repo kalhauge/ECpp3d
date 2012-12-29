@@ -36,6 +36,9 @@ public:
 	friend std::ostream& operator<< (std::ostream& stream, const Object& object) {
 		return stream << object.toString();
 	}
+	friend std::ostream& operator<< (std::ostream& stream, const Object * const object) {
+			return stream << object->toString();
+		}
 
 	static void deleteObjects(Objects * const object);
 };
@@ -68,6 +71,12 @@ public:
 	GLuint getLocation() const {return location;}
 };
 
+class Area : public Object {
+public:
+	static Area STDSIZE;
+	const GLsizei x,y,width,height;
+	Area(GLsizei x,GLsizei y,GLsizei width,GLsizei height);
+};
 
 }
 

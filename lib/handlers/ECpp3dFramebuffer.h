@@ -18,17 +18,30 @@ class Framebuffer;
 typedef std::vector<Framebuffer*> Framebuffers;
 
 class Framebuffer : public OpenGLHandler{
-	static const Framebuffer * const SCREEN;
+
 	static const Framebuffer * bound;
-	Framebuffer(int location) : OpenGLHandler(location) {};
+
+	const Area * viewport;
+
+	Framebuffer(int location) : OpenGLHandler(location), viewport(0){};
 public:
+	static Framebuffer * const SCREEN;
+
 	void bind(bool force = false) const;
 
 	static Framebuffers generateFramebuffers(GLsizei number);
 	static Framebuffer * generateFramebuffer();
 
+	void initialize(const Area * const viewport) {
+		setViewport(viewport);
+	};
 
-	void attach(int i,const Texture2D & texture);
+	void setViewport(const Area  * const area);
+
+	void attach(int i,const Texture2D * const texture);
+	void clearColor(const glm::vec4 & color);
+
+	void makedrawable() const;
 
 	void validate() const throw (OpenGLException);
 	void finalize() {};

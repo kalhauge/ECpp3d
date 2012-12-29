@@ -11,12 +11,18 @@
 #include "ECpp3dUtils.h"
 #include "ECpp3dException.h"
 #include "handlers/ECpp3dTexture.h"
+#include "handlers/ECpp3dFramebuffer.h"
+#include "ECpp3dShaderProgram.h"
+#include "handlers/ECpp3dVertexArray.h"
 #include <set>
 namespace ECpp3d {
 
 class OpenGLContext {
 	static bool initialized;
 	static Samplers samplers;
+
+	static const Area * viewport;
+
 	static std::set<const Sampler*> freeSamplers;
 	static ShaderVariableManager manager;
 public:
@@ -45,6 +51,10 @@ public:
 	static void finalize() {
 		OpenGLHandler::finalize((Handlers*)&samplers);
 	}
+
+	static void setViewport(const Area * const viewport);
+	static void draw(const Framebuffer & buffer,const ShaderProgram & program,const VertexArray & object);
+	static void draw(const Framebuffer * buffer,const ShaderProgram * program,const VertexArray * object);
 
 	static const Sampler * getSampler();
 

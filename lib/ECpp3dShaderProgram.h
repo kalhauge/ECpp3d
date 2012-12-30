@@ -69,8 +69,9 @@ public:
 
 	void attachUniform(const UniformDescription & description, const glm::vec4 & a) const;
 	void attachUniform(const UniformDescription & description, const glm::mat4 & a) const;
+	void attachUniform(const UniformDescription & description, const glm::mat2 & a) const;
 	void attachUniform(const UniformDescription & description, const GLint & a) const;
-
+	void attachUniform(const UniformDescription & description, const GLfloat & a) const;
 	void attachUniform(const UniformDescription & description, Texture * a) const;
 
 	void use(bool force = false) const;

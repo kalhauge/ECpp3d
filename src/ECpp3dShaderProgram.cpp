@@ -242,6 +242,14 @@ void ShaderProgram::attachUniform(const UniformDescription & description, const 
 	glUniformMatrix4fv(u->getIndex(),1,GL_FALSE,glm::value_ptr(a));
 }
 
+void ShaderProgram::attachUniform(const UniformDescription & description, const glm::mat2 & a) const{
+	use();
+	const Uniform * u = getUniform(description);
+	if(!u) return;
+	assert(u->getType() == GL_FLOAT_MAT2);
+	glUniformMatrix2fv(u->getIndex(),1,GL_FALSE,glm::value_ptr(a));
+}
+
 void ShaderProgram::attachUniform(const UniformDescription & description, const glm::vec4 & a) const{
 	use();
 	const Uniform * u = getUniform(description);
@@ -257,6 +265,15 @@ void ShaderProgram::attachUniform(const UniformDescription & description, const 
 	assert(u->getType() == GL_INT);
 	glUniform1i(u->getIndex(),a);
 }
+
+void ShaderProgram::attachUniform(const UniformDescription & description, const GLfloat & a) const{
+	use();
+	const Uniform * u = getUniform(description);
+	if(!u) return;
+	assert(u->getType() == GL_FLOAT);
+	glUniform1f(u->getIndex(),a);
+}
+
 
 void ShaderProgram::attachUniform(const UniformDescription & description, Texture * t) const{
 	use();

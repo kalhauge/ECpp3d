@@ -27,15 +27,29 @@ static const GLfloat pos[] = {-1 , -1,
 };
 
 
-ShaderProgram * program;
-VertexArray * screen;
+ShaderProgram * calculator;
+
+VertexArray * fullwindow_rect;
+
 ArrayBuffer * position;
 Texture1D * color;
+Area * screen_size = new Area(0,0,600,600);
 UniformDescription LIMIT("limit");
 UniformDescription ITERATION("iteration");
+
+
+void makeGradient(){
+	Texture1D::gradient gradient;
+	gradient.push_back(Texture1D::gradvector(0,glm::vec4(0,1,0,1)));
+	gradient.push_back(Texture1D::gradvector(1,glm::vec4(1,0,0,1)));
+	color = Texture1D::createLinearGradient(Texture::generateTexture(),512,gradient);
+	color->setWrappingS(GL_CLAMP_TO_EDGE);
+}
+
 void setupGL() {
 	glClearColor(0,0,1,1);
 	OpenGLContext::initialize();
+	Framebuffer::SCREEN->initialize(screen_size);
 	OpenGLContext::loadStandardVariableDescription();
 	OpenGLContext::load(LIMIT);
 	OpenGLContext::load(ITERATION);
@@ -43,32 +57,26 @@ void setupGL() {
 	OpenGLContext::printspecs(cout);
 	try {
 
-		screen = VertexArray::generateVertexArray();
+		fullwindow_rect = VertexArray::generateVertexArray();
 		position = new ArrayBuffer(Buffer::generateBuffer());
 		position->initialize(pos,6,2,GL_FLOAT,GL_STATIC_DRAW);
-		screen->add(AttributeDescription::POSITION,position);
+		fullwindow_rect->add(AttributeDescription::POSITION,position);
 
-		Texture1D::gradient gradient;
-		gradient.push_back(Texture1D::gradvector(0,glm::vec4(0,1,0,1)));
-		gradient.push_back(Texture1D::gradvector(1,glm::vec4(1,0,0,1)));
-		color = Texture1D::createLinearGradient(Texture::generateTexture(),512,gradient);
-		color->setWrappingS(GL_CLAMP_TO_EDGE);
+		makeGradient();
 
-		program = ShaderProgram::fromPath("./simple_mandelbrot.vs","./step_mandelbrot.fs");
+		calculator = ShaderProgram::fromPath("./simple_mandelbrot");
 
+		calculator->initialize();
+		fullwindow_rect->initialize(6);
 
-
-		program->initialize();
-		screen->initialize(6);
-
-		program->attachUniform(UniformDescription::COLOR_TEXTURE,color);
+		calculator->attachUniform(UniformDescription::COLOR_TEXTURE,color);
 		glm::mat4 mvp = glm::translate(glm::scale(glm::mat4(),glm::vec3(1.5f,1.5f,1.5f)),glm::vec3(-0.5f,0,0));
-		program->attachUniform(UniformDescription::MVP_MATRIX,mvp);
+		calculator->attachUniform(UniformDescription::MVP_MATRIX,mvp);
 
-		program->printActiveVariables(cout);
+		calculator->printActiveVariables(cout);
 
-		screen->validate();
-		program->validate();
+		fullwindow_rect->validate();
+		calculator->validate();
 		OpenGLContext::checkForErrors();
 	} catch (Exception e) {
 		cout << e << endl;
@@ -88,13 +96,10 @@ int main(){
 	     }
 
 	    setupGL();
-	    glfwSetWindowTitle("GLFW Testing");
-    	program->use();
-    	screen->bind();
+	    glfwSetWindowTitle("Mandelbrot test");
 	    for(int i = 0; i < 1000; ++i){
-	    	glClear(GL_COLOR_BUFFER_BIT);
-	    	program->attachUniform(ITERATION,i);
-	    	program->attachUniform(LIMIT,1000);
+	    	calculator->attachUniform(LIMIT,i);
+	    	OpenGLContext::draw(Framebuffer::SCREEN,calculator,fullwindow_rect);
 	    	glDrawArrays(GL_TRIANGLES,0,6);
 	    	OpenGLContext::checkForErrors();
 	    	glfwSwapBuffers();

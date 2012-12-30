@@ -17,7 +17,7 @@ OBJ=$(addprefix $(OBJ_DIR)/,$(addsuffix .obj,$(NAMES)))
 
 
 
-all: libecpp3d.a bin/test1 bin/test2
+all: libecpp3d.a bin/test1 bin/test2 bin/test3
 	
 
 clean:
@@ -37,6 +37,11 @@ bin/test1 : obj/test1.obj libecpp3d.a
 bin/test2 : obj/test2.obj libecpp3d.a
 	@echo "BUILDING" $<	
 	@LD_LIBRARY_PATH=.; $(CXX) $(CXXFLAGS) $(LIBS) $(HEADERS) obj/test2.obj -o bin/test2
+	@echo "DONE BUILDING" $<
+
+bin/test3 : obj/test3.obj libecpp3d.a
+	@echo "BUILDING" $<	
+	@LD_LIBRARY_PATH=.; $(CXX) $(CXXFLAGS) $(LIBS) $(HEADERS) obj/test3.obj -o bin/test3
 	@echo "DONE BUILDING" $<
 
 $(OBJ_DIR)/%.obj: $(TEST_DIR)/%.cpp

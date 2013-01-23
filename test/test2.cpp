@@ -39,10 +39,10 @@ UniformDescription ITERATION("iteration");
 
 
 void makeGradient(){
-	Texture1D::gradient gradient;
-	gradient.push_back(Texture1D::gradvector(0,glm::vec4(0,1,0,1)));
-	gradient.push_back(Texture1D::gradvector(1,glm::vec4(1,0,0,1)));
-	color = Texture1D::createLinearGradient(Texture::generateTexture(),512,gradient);
+	Image::gradient gradient;
+	gradient.push_back(Image::gradvector(0,glm::vec4(0,1,0,1)));
+	gradient.push_back(Image::gradvector(1,glm::vec4(1,0,0,1)));
+	color = Texture1D::create()->initialize(Image::fromGradient(512,gradient));
 	color->setWrappingS(GL_CLAMP_TO_EDGE);
 }
 

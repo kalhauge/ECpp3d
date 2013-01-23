@@ -12,7 +12,7 @@ using namespace glm;
 
 namespace ECpp3d {
 
-Entity::Entity(){
+Entity::Entity() {
 	modelMatrix = mat4(1.0f);
 }
 

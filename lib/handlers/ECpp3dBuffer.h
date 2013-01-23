@@ -52,7 +52,10 @@ public:
 	ArrayBuffer(const Buffer * buffer) : Buffer(buffer->getLocation()) {
 		delete buffer;
 	};
-	void initialize(const GLvoid * data, GLsizeiptr numberOfVerts,GLsizeiptr vertSize, GLenum type, GLenum hint);
+	
+    static ArrayBuffer * create(const Buffer * buffer = generateBuffer());
+    
+    ArrayBuffer * initialize(const GLvoid * data, GLsizeiptr numberOfVerts,GLsizeiptr vertSize, GLenum type, GLenum hint);
 	void setData(GLintptr at, const GLvoid * data, GLsizei size);
 	void validate() const throw (OpenGLException);
 

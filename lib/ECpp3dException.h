@@ -75,8 +75,8 @@ public:
 	OpenGLInconsistentStateException(
 			const OpenGLHandler * handler,
 			const std::string & name,
-			GLint handler,
-			GLint server);
+			GLint handler_value,
+			GLint server_value);
 	const std::string getMessage() const;
 };
 

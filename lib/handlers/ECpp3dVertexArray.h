@@ -8,7 +8,7 @@
 #ifndef ECPP3DVERTEXARRAY_H_
 #define ECPP3DVERTEXARRAY_H_
 
-#include "ECpp3dUtils.h";
+#include "ECpp3dUtils.h"
 #include "handlers/ECpp3dBuffer.h"
 #include "ECpp3dShaderVariable.h"
 #include "ECpp3dShaderProgram.h"
@@ -42,7 +42,9 @@ public:
 	}
 
 	void add(const AttributeDescription & desc,const ArrayBuffer * buffer);
-	void initialize(GLsizei numberOfVerts);
+	
+    static VertexArray * create();
+    VertexArray * initialize(GLsizei numberOfVerts);
 
 	void finalize();
 	void validate() const throw (OpenGLException);

@@ -16,4 +16,30 @@
 #include <OpenGL/OpenGL.h>
 
 
+/*  SPECIAL FUNCTIONS TO MAKE THE INTERACTION WITH OPENGL EASIER*/
+
+namespace ECpp3d {
+
+/* 
+name: (type:GLenum) -> typeSize -> (size in bytes of type:int)
+returns -1 if the type is not found
+*/
+
+int typeSize(GLenum type);
+/* 
+name: (format:GLenum) -> formatSize -> (number of fields used in format:int)
+returns -1 if the format is not known;
+*/
+
+int formatSize(GLenum format);
+
+/*
+name: (type:T) -> getType -> (Enum descriping the type)
+*/
+
+template<typename T>
+GLenum getType(T type);
+
+}
+
 #endif

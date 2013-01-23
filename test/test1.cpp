@@ -75,23 +75,16 @@ void setupGL(){
 
     rect->initialize(6);
 
-    Texture1D::gradient grad;
-    grad.push_back(Texture1D::gradvector(0,glm::vec4(1,0,0,1)));
-    grad.push_back(Texture1D::gradvector(0.5,glm::vec4(0,0,1,1)));
-    grad.push_back(Texture1D::gradvector(1,glm::vec4(0,1,0,1)));
-    texture = Texture1D::createLinearGradient(Texture::generateTexture(),512,grad);
-
+    Image::gradient grad;
+    grad.push_back(Image::gradvector(0,glm::vec4(1,0,0,1)));
+    grad.push_back(Image::gradvector(0.5,glm::vec4(0,0,1,1)));
+    grad.push_back(Image::gradvector(1,glm::vec4(0,1,0,1)));
+    texture = Texture1D::create()->initialize(Image::fromGradient(512,grad));
     try {
+      texture = Texture2D::create()->initialize("./crate.jpg");
 
-      Texture2D *t = new Texture2D(Texture::generateTexture());
-      t->initialize(GL_RGBA,"./crate.jpg");
-      texture = t;
-
-      offscreen_image1 = new Texture2D(Texture::generateTexture());
-      offscreen_image1->initialize(GL_RGBA,1024,1024);
-
-      offscreen_image2 = new Texture2D(Texture::generateTexture());
-      offscreen_image2->initialize(GL_RGBA,1024,1024);
+      offscreen_image1 = Texture2D::create()->initialize(1024,1024);
+      offscreen_image2 = Texture2D::create()->initialize(1024,1024);
 
       offscreen = Framebuffer::generateFramebuffer();
       Area * area = new Area(0,0,1024,1024);

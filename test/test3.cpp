@@ -72,19 +72,17 @@ GLfloat iter = 0;
 
 
 void setupGradient(){
-	Texture1D::gradient gradient;
-	gradient.push_back(Texture1D::gradvector(0,glm::vec4(0,0,0.4,1)));
-	gradient.push_back(Texture1D::gradvector(1,glm::vec4(1,1,1,1)));
-	color = Texture1D::createLinearGradient(Texture::generateTexture(),512,gradient);
+	Image::gradient gradient;
+	gradient.push_back(Image::gradvector(0,glm::vec4(0,0,0.4,1)));
+	gradient.push_back(Image::gradvector(1,glm::vec4(1,1,1,1)));
+	color = Texture1D::create()->initialize(Image::fromGradient(512,gradient));
 	color->setWrappingS(GL_CLAMP_TO_EDGE);
 }
 
 void setupVertexArray(){
 	fullwindow_rect = VertexArray::generateVertexArray();
-	position = new ArrayBuffer(Buffer::generateBuffer());
-	position->initialize(pos,6,2,GL_FLOAT,GL_STATIC_DRAW);
-	texCoord = new ArrayBuffer(Buffer::generateBuffer());
-	texCoord->initialize(tex,6,2,GL_FLOAT,GL_STATIC_DRAW);
+	position = ArrayBuffer::create()->initialize(pos,6,2,GL_FLOAT,GL_STATIC_DRAW);
+	texCoord = ArrayBuffer::create()->initialize(tex,6,2,GL_FLOAT,GL_STATIC_DRAW);
 
 	fullwindow_rect->add(AttributeDescription::POSITION,position);
 	fullwindow_rect->add(AttributeDescription::TEXTURE_COORD_1,texCoord);
@@ -126,7 +124,7 @@ void setupGL() {
 
 		for(int i = 0; i < 2 ; i++) {
 			zValues[i] = new Texture2D(Texture::generateTexture());
-			zValues[i]->initialize(GL_RGBA,texture_size->width,texture_size->height);
+			zValues[i]->initialize(texture_size->width,texture_size->height);
 			zValues[i]->setMagnifyMethod(GL_NEAREST);
 			zValues[i]->setMinimizeMethod(GL_NEAREST);
 			zValues[i]->setWrappingS(GL_CLAMP_TO_EDGE);
@@ -214,19 +212,16 @@ int main(){
 	         glfwTerminate();
 	         exit( EXIT_FAILURE );
 	     }
+
 	    setupGL();
 
 	    glfwSetWindowTitle("Mandelbrot step test");
 
-
-        windowCallback(800,600);
-	    viewer->attachUniform(UniformDescription::COLOR_TEXTURE,color);
-
 	    updateScreen(glm::mat4(),glm::mat4(),glm::mat4());
-	    restart();
+        windowCallback(800,600);
 
-	    glm::vec4 test(0,0,0,1);
-	    print(s2t * test);
+        viewer->attachUniform(UniformDescription::COLOR_TEXTURE,color);
+	    restart();
 
 	    glfwSetMouseButtonCallback(&buttonCallback);
 	    glfwSetWindowSizeCallback(&windowCallback);

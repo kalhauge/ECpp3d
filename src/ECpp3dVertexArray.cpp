@@ -56,12 +56,18 @@ void VertexArray::add(const AttributeDescription & desc,const ArrayBuffer * buff
 }
 
 
-void VertexArray::initialize(GLsizei numberOfVerts){
+VertexArray * VertexArray::create(){
+    return generateVertexArray();
+}
+
+
+VertexArray * VertexArray::initialize(GLsizei numberOfVerts){
 	bind();
 	this->numberOfVerts = numberOfVerts;
 	for(int i =0; i < buffers.size(); i++ ) {
 		buffers[i].second->attach(buffers[i].first->getId());
 	}
+    return this;
 }
 
 void VertexArray::finalize() {

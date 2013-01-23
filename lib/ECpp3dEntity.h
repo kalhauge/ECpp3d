@@ -10,11 +10,13 @@
 
 #include "ECpp3dUtils.h"
 #include "ECpp3dDraworder.h"
+#include "ECpp3dDrawable.h"
+#include "handlers/ECpp3dVertexArray.h"
 #include <glm/glm.hpp>
 #include <vector>
 namespace ECpp3d{
 
-class Entity : public Object {
+class Entity : public Object, public Drawable {
 // Important matrices
 	glm::mat4 modelMatrix;
 	glm::mat4 mvpMatrix;
@@ -22,6 +24,8 @@ class Entity : public Object {
 	glm::mat3 nMatrix;
 
 	std::vector<Entity*> children;
+
+	VertexArray* info;
 
 public:
 
@@ -33,6 +37,8 @@ public:
 	virtual void update();
 	virtual void render() const;
 
+    void draw();
+    
 	void addChild(Entity * entity);
 	glm::mat4 & editModelMatrix();
 };

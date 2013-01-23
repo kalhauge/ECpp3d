@@ -9,6 +9,7 @@
 #define ECPP3DTEXTURE_H_
 
 #include "ECpp3dUtils.h"
+#include "tools/ECpp3dImage.h"
 #include "ECpp3dShaderVariable.h"
 #include <glm/glm.hpp>
 namespace ECpp3d {
@@ -24,12 +25,22 @@ protected:
 	const Sampler * sampler;
 	const GLenum type;
 	const GLenum bindtype;
+
+	GLsizei format;
+    
+    Image * data;
+    
+	void setupTexture();
 	Texture(GLuint location,GLenum type, GLenum bindtype);
 	void initialize();
 	void ensureSampler();
+
 public:
+
 	static Textures generateTextures(GLsizei number);
 	static Texture * generateTexture();
+
+    ~Texture();
 
 	void attach(const Uniform & u);
 	void freeSampler();
@@ -39,6 +50,10 @@ public:
 	void setParameter(GLenum pname, GLint param);
 
 	const std::string toString() const;
+
+	GLsizei getHeight();
+	GLsizei getWidth();
+	GLsizei getDepth();
 
 	void setBaseLevel(GLint level);
 	void setMaxLevel(GLint level);
@@ -84,15 +99,11 @@ public:
 	Texture1D(Texture * const texture) : Texture(texture->getLocation(),type,bindtype) {
 		delete texture;
 	}
+    
+    static Texture1D * create(Texture * const texture = Texture::generateTexture());
 
-
-	typedef std::pair<float,glm::vec4> gradvector;
-	typedef std::vector<gradvector> gradient;
-
-	static Texture1D * createLinearGradient(Texture * texture,int size, const gradient & description );
-
-
-	void initialize(const std::vector<glm::vec4> & data);
+	Texture1D * initialize(Image * image,GLint internalformat = GL_RGBA);
+    void pushImage();
 };
 
 
@@ -103,14 +114,44 @@ public:
 	Texture2D(Texture * const texture) : Texture(texture->getLocation(),type,bindtype) {
 		delete texture;
 	};
-
+    
+    
+    void pushImage();
+    
+    static Texture2D * create(Texture * const texture = Texture::generateTexture());
 
 	GLenum getBindType() const;
-	void initialize(GLint internalformat,const std::string & filename) throw (IOException);
-	void initialize(GLint internalformat, GLsizei width, GLsizei height, GLenum format, GLenum type, const GLvoid *pixels);
-	void initialize(GLint internalformat, GLsizei width, GLsizei height);
+    
+    Texture2D * initialize(Image * image,GLint internalformat = GL_RGBA);
+	Texture2D * initialize(const std::string & filename, GLint internalformat = GL_RGBA) throw (IOException);
+	Texture2D * initialize(GLsizei width, GLsizei height, GLint internalformat = GL_RGBA);
+};
+
+
+class TextureCube : public Texture {
+	static const GLenum type = GL_TEXTURE_CUBE_MAP;
+	static const GLenum bindtype = GL_SAMPLER_CUBE;
+    
+    Image * sides[6];
+public:
+	TextureCube(Texture * const texture) : Texture(texture->getLocation(),type,bindtype) {
+		delete texture;
+	};
+    
+    GLsizei getHeight();
+	GLsizei getWidth();
+	GLsizei getDepth();
+    
+    static TextureCube * create(Texture * const texture = Texture::generateTexture());
+
+	GLenum getBindType() const;
+	TextureCube * initialize(Image * sides[6],GLint internalformat= GL_RGBA);
+
+
 };
 
 }
+
+
 
 #endif /* ECPP3DTEXTURE_H_ */

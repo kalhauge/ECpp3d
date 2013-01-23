@@ -13,14 +13,22 @@
 namespace ECpp3d {
 
 
-Texture::Texture(GLuint location)
-	: OpenGLHandler(location), type(0), bindtype(0){
+void Texture::setupTexture(){
 	sampler = 0;
+    data = 0;
+}
+
+Texture::~Texture(){
+    if(data) delete data;
+}
+
+Texture::Texture(GLuint location) : OpenGLHandler(location), type(0), bindtype(0){
+	setupTexture();
 }
 
 Texture::Texture(GLuint location,GLenum type, GLenum bindtype)
 	: OpenGLHandler(location), type(type), bindtype(bindtype) {
-	sampler = 0;
+	setupTexture();
 }
 
 Textures Texture::generateTextures(GLsizei number){
@@ -80,6 +88,18 @@ void Texture::setMinimizeMethod(GLenum method) {
 	setParameter(GL_TEXTURE_MIN_FILTER,method);
 }
 
+GLsizei Texture::getWidth() {
+	return data->getSize().width;
+}
+
+GLsizei Texture::getHeight() {
+	return data->getSize().height;
+}
+
+GLsizei Texture::getDepth() {
+	return data->getSize().depth;
+}
+
 const std::string Texture::toString() const {
 	std::stringstream s;
 	s << "<Texture at ["<< location << "] - sampler: " << sampler <<">";
@@ -127,32 +147,24 @@ Samplers Sampler::getSamplers() {
 
 // Texture 1D
 
-
-void Texture1D::initialize(const std::vector<glm::vec4> & data)  {
-	Texture::initialize();
-	glTexImage1D(type,0,GL_RGBA,data.size(),0,GL_RGBA,GL_FLOAT,&data[0]);
-	setBaseLevel(0);
-	setMaxLevel(0);
+void Texture1D::pushImage() {
+    ensureSampler();
+    glTexImage1D(type,0,format,getWidth(),0,data->getFormat(),data->getType(),data->getData());
+	
 }
 
-Texture1D * Texture1D::createLinearGradient(Texture * texture,int size, const gradient & description ) {
-	std::vector<glm::vec4> data;
-	int index = 0;
-	float now = 0, stripsize = description[1].first;
-	for(int i = 0; i < size; i++) {
-		float value = ((float) i ) / size;
-		if(value > stripsize + now) {
-			index ++;
-			now = description[index].first;
-			stripsize = description[index+1].first - now;
-		}
-		float part = (value - now) / stripsize;
-		glm::vec4 color = description[index].second * (1-part) + description[index+1].second * part;
-		data.push_back(color);
-	}
-	Texture1D * retex = new Texture1D(texture);
-	retex->initialize(data);
-	return retex;
+Texture1D * Texture1D::initialize(Image * image, GLint internalformat) {
+	Texture::initialize();
+    this->format = internalformat;
+    this->data = image;
+    pushImage();
+	setBaseLevel(0);
+	setMaxLevel(0);
+    return this;
+}
+
+Texture1D * Texture1D::create(Texture * const texture) {
+    return new Texture1D(texture);
 }
 // Texture 2D
 
@@ -161,67 +173,63 @@ GLenum Texture2D::getBindType() const{
 	return bindtype;
 }
 
-
-
-void Texture2D::initialize(GLint internalformat,const std::string & filename) throw (IOException) {
-	struct jpeg_decompress_struct cinfo;
-	struct jpeg_error_mgr jerr;
-
-	JSAMPROW row_pointer[1];
-
-	FILE * infile = fopen(filename.c_str(),"rb");
-	if(!infile) throw IOException("Could not find file: " + filename);
-
-	cinfo.err = jpeg_std_error(&jerr);
-	jpeg_create_decompress((j_decompress_ptr) &cinfo);
-	jpeg_stdio_src( &cinfo, infile );
-	jpeg_read_header( &cinfo, 1 );
-
-	jpeg_start_decompress( &cinfo );
-
-	GLsizei width = cinfo.output_width;
-	GLsizei height = cinfo.output_height;
-	int num = cinfo.output_components;
-
-	GLubyte * image = new GLubyte[width*height*num];
-
-	GLenum format;
-
-	switch(num) {
-		case (1): format = GL_R8; break;
-		case (3): format = GL_RGB; break;
-		case (4): format = GL_RGBA; break;
-		default :
-			throw Exception("Not Know format of loaded image, or it is empty");
-	}
-
-	row_pointer[0] = (unsigned char *)malloc(width*num);
-	int location = 0;
-	while( cinfo.output_scanline < cinfo.image_height )
-	{
-		jpeg_read_scanlines( &cinfo, row_pointer, 1 );
-		for(int i=0; i<cinfo.image_width*cinfo.num_components;i++)
-			image[location++] = row_pointer[0][i];
-	}
-
-	jpeg_finish_decompress( &cinfo );
-	jpeg_destroy_decompress( &cinfo );
-	free( row_pointer[0] );
-	fclose( infile );
-
-	Texture2D::initialize(internalformat,width,height,format,GL_UNSIGNED_BYTE,image);
-	delete image;
+void Texture2D::pushImage() {
+    ensureSampler();
+    glTexImage2D(type,0,format,getWidth(),getHeight(),0,data->getFormat(),data->getType(),data->getData());
+	
 }
 
-void Texture2D::initialize(GLint internalformat, GLsizei width, GLsizei height, GLenum format, GLenum type, const GLvoid *pixels) {
-	Texture::initialize();
-	glTexImage2D(this->type,0,internalformat,width,height,0,format,type,pixels);
-	setBaseLevel(0);
+Texture2D * Texture2D::initialize(Image * image, GLint internalformat) {
+    Texture::initialize();
+    this->data = image;
+    this->format = internalformat;
+    pushImage();
+    setBaseLevel(0);
 	setMaxLevel(0);
+    return this;
 }
 
-void Texture2D::initialize(GLint internalformat, GLsizei width, GLsizei height) {
-	initialize(internalformat,width,height,GL_RGBA,GL_FLOAT,0);
+Texture2D * Texture2D::initialize(const std::string & filename,GLint internalformat) throw (IOException) {
+    return initialize(Image::fromJPEG(filename),internalformat);
+}
+
+Texture2D * Texture2D::initialize(GLsizei width, GLsizei height, GLint internalformat) {
+	return initialize(new Image(makeImageSize(width,height,1)),internalformat);
+}
+
+GLsizei TextureCube::getWidth() {
+	return sides[0]->getSize().width;
+}
+
+GLsizei TextureCube::getHeight() {
+	return sides[0]->getSize().height;
+}
+
+GLsizei TextureCube::getDepth() {
+	return sides[0]->getSize().depth;
+}
+
+Texture2D * Texture2D::create(Texture * const texture) {
+    return new Texture2D(texture);
+}
+
+// TextureCube
+
+TextureCube * TextureCube::initialize(Image * sides[6], GLint internalformat) {
+	Texture::initialize();
+	memcpy(this->sides,sides,sizeof(Image*)*6);
+	for(int i = 0; i < 6; i++) {
+		glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i,0,
+					internalformat,
+					getWidth(),getHeight(),
+					0,sides[i]->getFormat(),
+					GL_FLOAT,sides[i]->getData());
+	}
+    return this;
+}
+
+TextureCube * TextureCube::create(Texture * const texture) {
+    return new TextureCube(texture);
 }
 
 }

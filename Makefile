@@ -4,8 +4,8 @@ CXX=g++
 CXXFLAGS= -g
 
 FRAMEWORKS= -framework OpenGL -framework IOKit -framework Cocoa
-LIBS= -L"/opt/X11/lib" -L"/usr/local/lib" -lecpp3d -ljpeg -lGLFW -L. $(FRAMEWORKS)
-HEADERS = -I"/opt/X11/include" -I"/usr/local/include" -Ilib/
+LIBS= -L"/usr/local/lib" -lecpp3d -ljpeg -lGLFW -L. $(FRAMEWORKS)
+HEADERS = -I"/usr/local/include" -Ilib/
 
 
 NAMES=$(notdir $(basename $(wildcard src/*.cpp)))

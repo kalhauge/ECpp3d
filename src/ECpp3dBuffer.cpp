@@ -75,11 +75,12 @@ void Buffer::setData(GLenum target, GLintptr at, const GLvoid * data, GLsizei si
 	glBufferSubData(target,at,size,data);
 }
 
-void ArrayBuffer::initialize(const GLvoid * data,GLsizeiptr numberOfVerts,GLsizeiptr vertSize,GLenum type,GLenum hint){
+ArrayBuffer *  ArrayBuffer::initialize(const GLvoid * data,GLsizeiptr numberOfVerts,GLsizeiptr vertSize,GLenum type,GLenum hint){
 	bind();
 	this->vertSize = vertSize;
 	this->numberOfVerts = numberOfVerts;
 	Buffer::initialize(GL_ARRAY_BUFFER,data,numberOfVerts*vertSize,type,hint);
+    return this;
 }
 
 void ArrayBuffer::setData(GLintptr at, const GLvoid * data, GLsizei size) {
@@ -91,6 +92,10 @@ void ArrayBuffer::attach(int location) const{
 	bind(true);
 	glEnableVertexAttribArray(location);
 	glVertexAttribPointer(location,vertSize,type,false,0,0);
+}
+
+ArrayBuffer * ArrayBuffer::create(const Buffer * buffer){
+	return new ArrayBuffer(buffer);
 }
 
 void ArrayBuffer::bind(bool force) const{

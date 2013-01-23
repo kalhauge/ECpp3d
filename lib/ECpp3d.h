@@ -15,6 +15,7 @@
 #include "ECpp3dOpenGL.h"
 #include "ECpp3dOpenGLContext.h"
 #include "ECpp3dShaderProgram.h"
+#include "tools/ECpp3dImage.h"
 #include "handlers/ECpp3dBuffer.h"
 #include "handlers/ECpp3dVertexArray.h"
 #include "handlers/ECpp3dTexture.h"

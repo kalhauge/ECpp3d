@@ -10,8 +10,7 @@
 
 namespace ECpp3d {
 
-Framebuffer * const Framebuffer::SCREEN = new Framebuffer(0);
-const Framebuffer * Framebuffer::bound = Framebuffer::SCREEN;
+const Framebuffer * Framebuffer::bound = OpenGLContext::SCREEN;
 
 Framebuffers Framebuffer::generateFramebuffers(GLsizei number){
 	GLuint locations[number];

@@ -24,10 +24,11 @@ class Framebuffer : public OpenGLHandler{
 	const Area * viewport;
 
 	Framebuffer(int location) : OpenGLHandler(location), viewport(0){};
-public:
-	static Framebuffer * const SCREEN;
-
-	void bind(bool force = false) const;
+ public:
+    
+    friend class OpenGLContext; 
+	
+    void bind(bool force = false) const;
 
 	static Framebuffers generateFramebuffers(GLsizei number);
 	static Framebuffer * generateFramebuffer();

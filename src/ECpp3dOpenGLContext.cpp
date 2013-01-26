@@ -6,9 +6,11 @@
  */
 
 #include "ECpp3dOpenGLContext.h"
+#include "handlers/ECpp3dFramebuffer.h"
 
 namespace ECpp3d {
 
+Framebuffer * const OpenGLContext::SCREEN = new Framebuffer(0);
 bool OpenGLContext::initialized = false;
 const Area * OpenGLContext::viewport = 0;
 
@@ -17,34 +19,42 @@ std::set<const Sampler*> OpenGLContext::freeSamplers = std::set<const Sampler*>(
 
 ShaderVariableManager OpenGLContext::manager;
 
-const UniformDescription & OpenGLContext::U(const std::string & name) throw (ShaderVariableDoesNotExistException) {
+const UniformDescription & OpenGLContext::U(const std::string & name) 
+throw (ShaderVariableDoesNotExistException) {
 	return manager.getUniformDescription(name);
 }
 
-const UniformDescription & OpenGLContext::U(const Uniform & uniform) throw (ShaderVariableDoesNotExistException) {
+const UniformDescription & OpenGLContext::U(const Uniform & uniform)
+throw (ShaderVariableDoesNotExistException) {
 	return manager.getUniformDescription(uniform.getName());
 }
 
-const AttributeDescription & OpenGLContext::A(const std::string & name) throw (ShaderVariableDoesNotExistException) {
+const AttributeDescription & OpenGLContext::A(const std::string & name)
+throw (ShaderVariableDoesNotExistException) {
 	return manager.getAttributeDescription(name);
 }
 
-const OutputDescription & OpenGLContext::O(const std::string & name) throw (ShaderVariableDoesNotExistException) {
+const OutputDescription & OpenGLContext::O(const std::string & name) 
+throw (ShaderVariableDoesNotExistException) {
 	return manager.getOutputDescription(name);
 }
 
-void OpenGLContext::load(const AttributeDescription & v) throw (ShaderVariableDoesExistException) {
+void OpenGLContext::load(const AttributeDescription & v)
+throw (ShaderVariableDoesExistException) {
 	manager.registerAttribute(v);
 }
 
-void OpenGLContext::load(const UniformDescription & v) throw (ShaderVariableDoesExistException) {
+void OpenGLContext::load(const UniformDescription & v)
+throw (ShaderVariableDoesExistException) {
 	manager.registerUniform(v);
 }
-void OpenGLContext::load(const OutputDescription & v) throw (ShaderVariableDoesExistException) {
+void OpenGLContext::load(const OutputDescription & v)
+throw (ShaderVariableDoesExistException) {
 	manager.registerOutput(v);
 }
 
-void OpenGLContext::loadStandardVariableDescription() throw (ShaderVariableDoesExistException){
+void OpenGLContext::loadStandardVariableDescription()
+throw (ShaderVariableDoesExistException){
 	manager.loadStandards();
 }
 

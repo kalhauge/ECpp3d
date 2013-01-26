@@ -125,7 +125,7 @@ int main(int argc, char ** argv)
     
     setupGL();
     glfwSetWindowTitle("TEST 1");
-    Framebuffer::SCREEN->setViewport(new Area(0,0,600,600));
+    OpenGLContext::SCREEN->setViewport(new Area(0,0,600,600));
     GLfloat f[] = {0,0,0,1};
 
     cout << texture << endl;
@@ -147,8 +147,8 @@ int main(int argc, char ** argv)
     program->attachUniform(UniformDescription::COLOR_TEXTURE,drawtexture);
 
     glViewport(0,0,600,600);
-    Framebuffer::SCREEN->clearColor(black);
-    OpenGLContext::draw(Framebuffer::SCREEN,program,rect);
+    OpenGLContext::SCREEN->clearColor(black);
+    OpenGLContext::draw(OpenGLContext::SCREEN,program,rect);
     glDrawArrays(GL_TRIANGLES,0,6);
     int x = 0;
     while(true) for(GLclampf i = 0; i < 1; i += 1.0/1000){
@@ -172,8 +172,8 @@ int main(int argc, char ** argv)
         glDrawArrays(GL_TRIANGLES,0,6);
 
         program->attachUniform(UniformDescription::COLOR_TEXTURE,drawtexture);
-        Framebuffer::SCREEN->clearColor(black);
-        OpenGLContext::draw(Framebuffer::SCREEN,program,rect);
+        OpenGLContext::SCREEN->clearColor(black);
+        OpenGLContext::draw(OpenGLContext::SCREEN,program,rect);
     	glDrawArrays(GL_TRIANGLES,0,6);
     	OpenGLContext::checkForErrors();
     	glfwSwapBuffers();

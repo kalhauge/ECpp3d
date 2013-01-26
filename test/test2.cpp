@@ -49,7 +49,7 @@ void makeGradient(){
 void setupGL() {
 	glClearColor(0,0,1,1);
 	OpenGLContext::initialize();
-	Framebuffer::SCREEN->initialize(screen_size);
+	OpenGLContext::SCREEN->initialize(screen_size);
 	OpenGLContext::loadStandardVariableDescription();
 	OpenGLContext::load(LIMIT);
 	OpenGLContext::load(ITERATION);
@@ -99,7 +99,7 @@ int main(){
 	    glfwSetWindowTitle("Mandelbrot test");
 	    for(int i = 0; i < 1000; ++i){
 	    	calculator->attachUniform(LIMIT,i);
-	    	OpenGLContext::draw(Framebuffer::SCREEN,calculator,fullwindow_rect);
+	    	OpenGLContext::draw(OpenGLContext::SCREEN,calculator,fullwindow_rect);
 	    	glDrawArrays(GL_TRIANGLES,0,6);
 	    	OpenGLContext::checkForErrors();
 	    	glfwSwapBuffers();

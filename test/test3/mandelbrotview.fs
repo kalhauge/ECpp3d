@@ -1,5 +1,4 @@
 #version 150
-#extension GL_ARB_gpu_shader_fp64 : enable
 out vec4 stdout;
 in  vec4 position;
 

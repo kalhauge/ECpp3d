@@ -110,7 +110,7 @@ void print(const glm::vec4 & a ) {
 
 void setupGL() {
 	OpenGLContext::initialize();
-	Framebuffer::SCREEN->initialize(screen_size);
+	OpenGLContext::SCREEN->initialize(screen_size);
 	OpenGLContext::loadStandardVariableDescription();
 	OpenGLContext::load(ITERATION);
 	OpenGLContext::load(ZVALUES);
@@ -123,8 +123,7 @@ void setupGL() {
 		offscreen->initialize(texture_size);
 
 		for(int i = 0; i < 2 ; i++) {
-			zValues[i] = new Texture2D(Texture::generateTexture());
-			zValues[i]->initialize(texture_size->width,texture_size->height);
+			zValues[i] = Texture2D::create()->initialize(texture_size->width,texture_size->height);
 			zValues[i]->setMagnifyMethod(GL_NEAREST);
 			zValues[i]->setMinimizeMethod(GL_NEAREST);
 			zValues[i]->setWrappingS(GL_CLAMP_TO_EDGE);
@@ -197,7 +196,7 @@ int GLFWCALL closeCallback() {
 void GLFWCALL windowCallback(int width, int height) {
 	delete screen_size;
 	screen_size = new Area(0,0,width,height);
-	Framebuffer::SCREEN->setViewport(screen_size);
+	OpenGLContext::SCREEN->setViewport(screen_size);
 
 	updateScreen(smatrix.translate,smatrix.scale, glm::scale(glm::mat4(),glm::vec3( float(width) / height ,1,1)));
 }
@@ -246,7 +245,7 @@ int main(){
 
 	    	viewer->attachUniform(ZVALUES,zValues[d]);
 	    	viewer->attachUniform(ITERATION,iter);
-	    	OpenGLContext::draw(Framebuffer::SCREEN,viewer,fullwindow_rect);
+	    	OpenGLContext::draw(OpenGLContext::SCREEN,calculator,fullwindow_rect);
 	    	glDrawArrays(GL_TRIANGLES,0,6);
 
 	    	d = d ? 0 : 1;

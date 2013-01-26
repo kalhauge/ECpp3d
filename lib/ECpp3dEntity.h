@@ -25,7 +25,7 @@ class Entity : public Object, public Drawable {
 
 	std::vector<Entity*> children;
 
-	VertexArray* info;
+	VertexArray* drawinfo;
 
 public:
 
@@ -35,9 +35,8 @@ public:
 	void createMatrices(const glm::mat4 & projection, const glm::mat4 & view);
 
 	virtual void update();
-	virtual void render() const;
+    virtual void draw(const glm::mat4 & projection, const glm::mat4 & view) const;
 
-    void draw();
     
 	void addChild(Entity * entity);
 	glm::mat4 & editModelMatrix();

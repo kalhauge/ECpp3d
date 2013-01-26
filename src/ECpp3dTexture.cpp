@@ -34,7 +34,6 @@ Texture::Texture(GLuint location,GLenum type, GLenum bindtype)
 Textures Texture::generateTextures(GLsizei number){
 	GLuint locations[number];
 	glGenTextures(number,locations);
-
 	Textures textures;
 
 	for(int i = 0; i < number; ++i) {
@@ -187,6 +186,7 @@ Texture2D * Texture2D::initialize(Image * image, GLint internalformat) {
     setBaseLevel(0);
 	setMaxLevel(0);
     return this;
+
 }
 
 Texture2D * Texture2D::initialize(const std::string & filename,GLint internalformat) throw (IOException) {

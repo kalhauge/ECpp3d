@@ -17,10 +17,18 @@ ImageSize makeImageSize(GLsizei width,GLsizei height,GLsizei depth) {
     return (ImageSize) {width,height,depth};
 }
 
+Image::Image(){
+    this->size = makeImageSize(0,0,0);
+    this->format = GL_RGB;
+    this->type = GL_UNSIGNED_BYTE;
+    this->data = 0;
+
+}
+
 Image::Image(ImageSize size) {
     this->size = size;
-    this->format = GL_RGBA;
-    this->type = GL_BYTE;
+    this->format = GL_RGB;
+    this->type = GL_UNSIGNED_BYTE;
     this->data = 0;
 }
 
@@ -35,18 +43,18 @@ Image::~Image() {
     clearSpace();
 }
 
-GLenum Image::getFormat() {
+GLenum Image::getFormat() const {
     return format;
 }
-GLenum Image::getType(){
+GLenum Image::getType() const {
     return type;
 }
 
-const ImageSize & Image::getSize() {
+const ImageSize & Image::getSize() const {
     return size;
 }
 
-const GLubyte * Image::getData() {
+const GLubyte * Image::getData() const {
     return data;
 }
 
@@ -103,6 +111,18 @@ Image * Image::fromJPEG(const std::string & filename)
     return image;
 }
 
+
+GLubyte * Image::getPixelIndex(GLsizei x, GLsizei y) {
+    return data + (pixelSize * (size.width* y +x));     
+}
+
+
+const GLubyte * Image::getPixelIndex(GLsizei x, GLsizei y) const {
+    return data + (pixelSize * (size.width* y +x));     
+}
+
+
+
 Image * Image::fromGradient(GLint width, const gradient & gradient) {
     std::vector<glm::vec4> data;
     int index = 0;
@@ -115,7 +135,8 @@ Image * Image::fromGradient(GLint width, const gradient & gradient) {
 			stripsize = gradient[index+1].first - now;
 		}
 		float part = (value - now) / stripsize;
-		glm::vec4 color = gradient[index].second * (1-part) + gradient[index+1].second * part;
+		glm::vec4 color = gradient[index].second 
+            * (1-part) + gradient[index+1].second * part;
 		data.push_back(color);
 	}
     Image * image = new Image(makeImageSize(width,1,1),GL_RGBA,GL_FLOAT);
@@ -127,14 +148,101 @@ Image * Image::fromGradient(GLint width, const gradient & gradient) {
 
 void Image::allocateSpace() {
     clearSpace();
-    data = new GLubyte[typeSize(type)*formatSize(format)*size.width * size.height * size.depth];
+    pixelSize=typeSize(type)*formatSize(format);
+    int bytes = pixelSize * size.width * size.height * size.depth;
+    data = new GLubyte[bytes];
 }
 
 
 void Image::clearSpace() {
-    if(data) delete [] data;
+    if(data) {
+        delete [] data;
+        data = 0;
+    }
 }
 
+/*
+ * toJPEG
+ *
+ * Saves a image into jpeg
+ *
+ * Code stolen from http://www.andrewnoske.com/wiki/index.php?title=Jpeglib_libray,
+ * and edited to suit the program.
+ *
+ */
+
+void Image::toJPEG(const std::string & filename, int quality) const throw (IOException){
+  
+    struct jpeg_compress_struct cinfo;    // basic info for JPEG properties
+    struct jpeg_error_mgr jerr;           // in case of error
+    FILE * outfile;                       // target file
+    JSAMPROW row_pointer[1];              // pointer to JSAMPLE row[s]
+
+    
+    // Allocate copressing file
+    cinfo.err = jpeg_std_error(&jerr);
+    jpeg_create_compress(&cinfo);
+
+
+    if ((outfile = fopen(filename.c_str(), "wb")) == NULL) {
+        throw IOException("Could not open file: " + filename);
+    }
+
+    //Startup the Jpg
+    jpeg_stdio_dest(&cinfo, outfile);
+
+
+    cinfo.image_width  = size.width;
+    cinfo.image_height = size.height;
+    cinfo.input_components = formatSize(format); 
+    cinfo.in_color_space = JCS_RGB;
+
+    jpeg_set_defaults(&cinfo);
+    jpeg_set_quality(&cinfo, quality, TRUE);
+
+ 
+    jpeg_start_compress(&cinfo, TRUE);
+
+    while (cinfo.next_scanline < cinfo.image_height)
+    {
+        row_pointer[0] = (JSAMPLE*) this->getPixelIndex(0,cinfo.next_scanline);
+        (void) jpeg_write_scanlines(&cinfo,row_pointer , 1);
+    }
+
+    jpeg_finish_compress(&cinfo);
+    fclose(outfile);
+    jpeg_destroy_compress(&cinfo);
+
+}
+
+Image * Image::createCubeMapImages(const Image * crossImage) {
+    Image * images = new Image[6];
+    ImageSize size = makeImageSize(crossImage->size.width/4
+                        ,crossImage->size.height/3,1);
+    int i = 0;
+    int row =0;
+    Area a[] =  {   
+       Area(0,size.height,size.width,size.height),                 // X+
+       Area(size.width,size.height,size.width,size.height),        // Z+
+       Area(size.width*2,size.height,size.width,size.height),      // X-
+       Area(size.width*3,size.height,size.width,size.height),      // Z-
+       Area(size.width,0,size.width,size.height),                  // Y+
+       Area(size.width,size.height*2,size.width,size.height),      // Y-
+    };
+    
+    for (i = 0; i < 6; i ++) {
+        images[i].size = size;
+        images[i].format = crossImage->format;
+        images[i].type = crossImage->type;
+        images[i].allocateSpace();
+        for(row = 0; row < a[i].height; ++row){
+            memcpy(images[i].getPixelIndex(0,row)
+                    ,crossImage->getPixelIndex(a[i].x,row + a[i].y)
+                    ,crossImage->pixelSize * size.width);
+        }
+    }
+    return images;
+}
 
 
 

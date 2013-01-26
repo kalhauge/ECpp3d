@@ -27,6 +27,7 @@ class OpenGLContext {
 	static ShaderVariableManager manager;
 public:
 
+    static Framebuffer * const SCREEN;
 	static const UniformDescription & U(const std::string & name) throw (ShaderVariableDoesNotExistException);
 	static const UniformDescription & U(const Uniform & uniform) throw (ShaderVariableDoesNotExistException);
 

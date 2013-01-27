@@ -20,4 +20,8 @@
 #include "handlers/ECpp3dVertexArray.h"
 #include "handlers/ECpp3dTexture.h"
 #include "handlers/ECpp3dFramebuffer.h"
+#include "draw/ECpp3dCamera.h"
+#include "draw/ECpp3dDrawable.h"
+#include "draw/ECpp3dPrimitives.h"
+
 #endif

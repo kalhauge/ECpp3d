@@ -64,14 +64,14 @@ const std::string OpenGLInvalidValueException::getMessage() const {
 }
 
 void OpenGLHandler::finalize(Handlers * const handlers) {
-	for(int i = 0; i < handlers->size(); ++i) {
+	for(unsigned int i = 0; i < handlers->size(); ++i) {
 		(*handlers)[i]->finalize();
 	}
 	deleteObjects((Objects*)handlers);
 }
 
 void Object::deleteObjects(Objects * const objects) {
-	for(int i = 0; i < (*objects).size(); ++i) {
+	for(unsigned int i = 0; i < (*objects).size(); ++i) {
 		delete (*objects)[i];
 	}
 }

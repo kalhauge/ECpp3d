@@ -51,8 +51,8 @@ public:
 			const std::string &  vert_shader_loc,
 			const std::string & frag_shader_loc) throw (ShaderCompileException,IOException);
 
-	void setVertexShaderCode(const char * vertex_sharder_code);
-	void setFragmentShaderCode(const char * fragment_shader_code);
+	ShaderProgram *  setVertexShaderCode(const char * vertex_sharder_code);
+	ShaderProgram *  setFragmentShaderCode(const char * fragment_shader_code);
 	std::vector<Uniform> getActiveUniformList();
 	std::vector<Attribute> getActiveAttributeList();
 
@@ -62,17 +62,17 @@ public:
 	GLint getNumberOfActiveUniforms() const;
 	GLint getNumberOfActiveAttributes() const;
 
-	void initialize() throw (ShaderCompileException);
-	void validate() throw (OpenGLException);
+	ShaderProgram *  initialize() throw (ShaderCompileException);
+	ShaderProgram *  validate() throw (OpenGLException);
 
-	void printActiveVariables(std::ostream & o);
+	ShaderProgram *  printActiveVariables(std::ostream & o);
 
-	void attachUniform(const UniformDescription & description, const glm::vec4 & a) const;
-	void attachUniform(const UniformDescription & description, const glm::mat4 & a) const;
-	void attachUniform(const UniformDescription & description, const glm::mat2 & a) const;
-	void attachUniform(const UniformDescription & description, const GLint & a) const;
-	void attachUniform(const UniformDescription & description, const GLfloat & a) const;
-	void attachUniform(const UniformDescription & description, Texture * a) const;
+	const ShaderProgram *  attachUniform(const UniformDescription & description, const glm::vec4 & a) const;
+	const ShaderProgram *  attachUniform(const UniformDescription & description, const glm::mat4 & a) const;
+	const ShaderProgram *  attachUniform(const UniformDescription & description, const glm::mat2 & a) const;
+	const ShaderProgram *  attachUniform(const UniformDescription & description, const GLint & a) const;
+	const ShaderProgram *  attachUniform(const UniformDescription & description, const GLfloat & a) const;
+	const ShaderProgram *  attachUniform(const UniformDescription & description, Texture * a) const;
 
 	void use(bool force = false) const;
 

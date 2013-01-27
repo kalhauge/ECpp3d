@@ -126,7 +126,6 @@ int main(int argc, char ** argv)
     setupGL();
     glfwSetWindowTitle("TEST 1");
     OpenGLContext::SCREEN->setViewport(new Area(0,0,600,600));
-    GLfloat f[] = {0,0,0,1};
 
     cout << texture << endl;
     cout << offscreen_image1 <<endl;

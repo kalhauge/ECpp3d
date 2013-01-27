@@ -9,12 +9,19 @@
 #define ECPP3DENTITY_H_
 
 #include "ECpp3dUtils.h"
-#include "ECpp3dDraworder.h"
-#include "ECpp3dDrawable.h"
+#include "draw/ECpp3dDrawable.h"
 #include "handlers/ECpp3dVertexArray.h"
 #include <glm/glm.hpp>
 #include <vector>
+
 namespace ECpp3d{
+
+// 
+// Class: Entity
+//
+// A entity is something that has a position in space.
+//
+
 
 class Entity : public Object, public Drawable {
 // Important matrices

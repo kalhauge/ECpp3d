@@ -10,7 +10,7 @@
 namespace ECpp3d {
 
 const ArrayBuffer * ArrayBuffer::bound = 0;
-
+const ElementArrayBuffer * ElementArrayBuffer::bound = 0;
 Buffers Buffer::generateBuffers(GLsizei number){
 	GLuint locations[number];
 	glGenBuffers(number,locations);
@@ -62,7 +62,7 @@ void ArrayBuffer::validate() const throw (OpenGLException) {
 		throw OpenGLInconsistentStateException(this,"size",GLint(size), value);
 
 	value = getServerInfo(GL_BUFFER_USAGE);
-	if(usage != value)
+	if(usage != (GLenum) value)
 		throw OpenGLInconsistentStateException(this,"usage",GLint(usage),value);
 
 }
@@ -102,6 +102,37 @@ void ArrayBuffer::bind(bool force) const{
 	if(bound != this || force) {
 		bound = this;
 		glBindBuffer(GL_ARRAY_BUFFER,location);
+	}
+}
+
+ElementArrayBuffer *  ElementArrayBuffer::initialize(const GLvoid * data,GLsizeiptr numberOfIndicies,GLenum mode, GLenum type,GLenum hint){
+	bind();
+	this->numberOfIndicies = numberOfIndicies;
+    this->mode = mode;
+    Buffer::initialize(target,data,numberOfIndicies,type,hint);
+    return this;
+}
+
+void ElementArrayBuffer::setData(GLintptr at, const GLvoid * data, GLsizei size) {
+	bind();
+	Buffer::setData(target,at,data,size);
+}
+
+
+void ElementArrayBuffer::draw() const {
+    bind(true);
+  //  glDrawArrays(GL_TRIANGLE_STRIP,0,4);
+    glDrawElements(this->mode, this->numberOfIndicies, this->type, 0);
+}
+
+ElementArrayBuffer * ElementArrayBuffer::create(const Buffer * buffer){
+	return new ElementArrayBuffer(buffer);
+}
+
+void ElementArrayBuffer::bind(bool force) const{
+	if(bound != this || force) {
+		bound = this;
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER,location);
 	}
 }
 

@@ -6,7 +6,7 @@
  */
 
 
-#include "ECpp3dEntity.h"
+#include "entity/ECpp3dEntity.h"
 #include "glm/gtc/matrix_inverse.hpp"
 using namespace glm;
 
@@ -24,7 +24,7 @@ void Entity::createMatrices(const mat4 & projection, const mat4 & view) {
 	mvpMatrix = projection * mvMatrix;
 	nMatrix = inverseTranspose(mat3(mvMatrix));
 
-	for(int i = 0; i < children.size(); ++i) {
+	for(unsigned int i = 0; i < children.size(); ++i) {
 		children[i]->createMatrices(projection,mvMatrix);
 	}
 }

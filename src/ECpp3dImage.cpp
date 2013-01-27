@@ -99,7 +99,7 @@ Image * Image::fromJPEG(const std::string & filename)
 	while( cinfo.output_scanline < cinfo.image_height )
 	{
 		jpeg_read_scanlines( &cinfo, row_pointer, 1 );
-		for(int i=0; i<cinfo.image_width*cinfo.num_components;i++)
+		for(unsigned int i=0; i<cinfo.image_width*cinfo.num_components;i++)
 			image->data[location++] = row_pointer[0][i];
 	}
 
@@ -215,6 +215,28 @@ void Image::toJPEG(const std::string & filename, int quality) const throw (IOExc
 
 }
 
+Image * Image::rotateCCW(){
+    ImageSize oldsize = size;
+    size = makeImageSize(oldsize.height,oldsize.width,oldsize.depth);
+    
+    GLubyte * old = this->data;
+    this->data = 0;
+    allocateSpace();
+    
+    //TODO Speed it up
+     for(int y = 0; y < size.height; y++)
+        for(int x = 0; x < size.width; x++ ) {
+         memcpy(this->getPixelIndex(x,y),
+                 &old[(y + (oldsize.width - x)*oldsize.height)*pixelSize],
+                 pixelSize);
+        }
+    delete [] old;
+    
+    return this;
+
+}
+
+
 Image * Image::createCubeMapImages(const Image * crossImage) {
     Image * images = new Image[6];
     ImageSize size = makeImageSize(crossImage->size.width/4
@@ -222,12 +244,12 @@ Image * Image::createCubeMapImages(const Image * crossImage) {
     int i = 0;
     int row =0;
     Area a[] =  {   
-       Area(0,size.height,size.width,size.height),                 // X+
-       Area(size.width,size.height,size.width,size.height),        // Z+
        Area(size.width*2,size.height,size.width,size.height),      // X-
-       Area(size.width*3,size.height,size.width,size.height),      // Z-
+       Area(0,size.height,size.width,size.height),                 // X+
        Area(size.width,0,size.width,size.height),                  // Y+
        Area(size.width,size.height*2,size.width,size.height),      // Y-
+       Area(size.width,size.height,size.width,size.height),        // Z-
+       Area(size.width*3,size.height,size.width,size.height),      // Z+
     };
     
     for (i = 0; i < 6; i ++) {
@@ -241,6 +263,10 @@ Image * Image::createCubeMapImages(const Image * crossImage) {
                     ,crossImage->pixelSize * size.width);
         }
     }
+//    images[2].rotateCCW();
+//    images[2].rotateCCW();
+//   images[3].rotateCCW();
+//    images[3].rotateCCW();
     return images;
 }
 

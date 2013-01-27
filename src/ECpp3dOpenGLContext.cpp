@@ -7,6 +7,7 @@
 
 #include "ECpp3dOpenGLContext.h"
 #include "handlers/ECpp3dFramebuffer.h"
+#include "ECpp3dUtils.h"
 
 namespace ECpp3d {
 
@@ -140,12 +141,7 @@ void OpenGLContext::draw(const Framebuffer * buffer,const ShaderProgram * progra
 }
 
 GLsizei OpenGLContext::getSizeOf(GLenum e) {
-	switch (e) {
-	case GL_FLOAT 	: return 4;
-	case GL_INT 	: return 4;
-	case GL_BYTE 	: return 1;
-	default			: return 0;
-	}
+	return typeSize(e);
 }
 
 

@@ -64,7 +64,7 @@ VertexArray * VertexArray::create(){
 VertexArray * VertexArray::initialize(GLsizei numberOfVerts){
 	bind();
 	this->numberOfVerts = numberOfVerts;
-	for(int i =0; i < buffers.size(); i++ ) {
+	for(unsigned int i =0; i < buffers.size(); i++ ) {
 		buffers[i].second->attach(buffers[i].first->getId());
 	}
     return this;
@@ -75,7 +75,7 @@ void VertexArray::finalize() {
 }
 
 void VertexArray::validate() const throw (OpenGLException){
-	for(int i =0; i < buffers.size(); i++ ) {
+	for(unsigned int i =0; i < buffers.size(); i++ ) {
 		buffers[i].second->validate();
 	}
 }

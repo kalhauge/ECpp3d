@@ -49,6 +49,8 @@ public:
     GLubyte * getPixelIndex(GLsizei x, GLsizei y);
     const GLubyte * getPixelIndex(GLsizei x, GLsizei y) const;
 
+    Image * rotateCCW();
+
     void toJPEG(const std::string & filename, int quality = 100) const throw (IOException);
 
     static Image * fromJPEG(const std::string & filename)

@@ -24,8 +24,6 @@ int main(int argc, char ** argv)
      }
     
     glfwSetWindowTitle(TEST_NAME);
-    GLfloat f[] = {0,0,0,1};
-  
     setupGL(); 
     while(loop()); 
 

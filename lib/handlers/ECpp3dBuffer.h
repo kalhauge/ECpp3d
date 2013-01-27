@@ -64,6 +64,27 @@ public:
 	GLint getServerInfo(GLenum e) const;
 };
 
+
+class ElementArrayBuffer : public Buffer {
+	static const GLuint target = GL_ELEMENT_ARRAY_BUFFER;
+	static const ElementArrayBuffer * bound;
+	void bind(bool force = false) const;
+	GLsizeiptr numberOfIndicies;
+    GLenum mode;
+public:
+
+    ElementArrayBuffer(const Buffer * buffer) : Buffer(buffer->getLocation()) {
+		delete buffer;
+	};
+	
+	void setData(GLintptr at, const GLvoid * data, GLsizei size);
+    static ElementArrayBuffer * create(const Buffer * buffer = generateBuffer());
+
+    ElementArrayBuffer * initialize(const GLvoid * data, GLsizeiptr numberOfIndicies, GLenum mode, GLenum type, GLenum hint);
+
+    void draw() const;
+};
+
 }
 
 

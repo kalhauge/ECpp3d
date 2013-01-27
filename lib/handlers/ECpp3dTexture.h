@@ -74,13 +74,13 @@ class Sampler : public Object {
 protected:
 
 	static const Sampler * active;
-	const GLuint activeid;
-	Sampler(GLuint activeid) : activeid(activeid) {};
+	const GLint activeid;
+	Sampler(GLint activeid) : activeid(activeid) {};
 
 public:
 
 	static Samplers getSamplers();
-	GLuint getActiveId() const;
+	GLint getActiveId() const;
 	const std::string toString() const;
 
 	GLenum getActiveEnum() const {
@@ -145,7 +145,7 @@ public:
     static TextureCube * create(Texture * const texture = Texture::generateTexture());
 
 	GLenum getBindType() const;
-	TextureCube * initialize(Image * sides[6],GLint internalformat= GL_RGBA);
+	TextureCube * initialize(Image * sides,GLint internalformat= GL_RGBA);
 
 
 };

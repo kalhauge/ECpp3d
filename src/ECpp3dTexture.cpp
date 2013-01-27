@@ -123,7 +123,7 @@ void Sampler::ensureActive() const{
 	glActiveTexture(getActiveEnum());
 }
 
-GLuint Sampler::getActiveId() const {
+GLint Sampler::getActiveId() const {
 	return activeid;
 }
 
@@ -134,10 +134,9 @@ const std::string Sampler::toString() const {
 }
 
 Samplers Sampler::getSamplers() {
-	GLuint num_samplers = OpenGLContext::getMaxCombinedTextureImageUnits();
+	GLint num_samplers = OpenGLContext::getMaxCombinedTextureImageUnits();
 
 	Samplers samplers;
-//	samplers.push_back(new Sampler(0));
 	for(int i = 0; i < num_samplers-1; ++i)
 		samplers.push_back(new Sampler(i));
 
@@ -215,16 +214,24 @@ Texture2D * Texture2D::create(Texture * const texture) {
 
 // TextureCube
 
-TextureCube * TextureCube::initialize(Image * sides[6], GLint internalformat) {
+TextureCube * TextureCube::initialize(Image * sides, GLint internalformat) {
 	Texture::initialize();
-	memcpy(this->sides,sides,sizeof(Image*)*6);
+    this->format = internalformat;
 	for(int i = 0; i < 6; i++) {
-		glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i,0,
+		this->sides[i] = sides + i;
+        int width = getWidth();
+        int height = getHeight();
+        glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i,0,
 					internalformat,
-					getWidth(),getHeight(),
-					0,sides[i]->getFormat(),
-					GL_FLOAT,sides[i]->getData());
+					width,height,
+					0,
+                    sides[i].getFormat(),
+					sides[i].getType(),
+                    sides[i].getData());
 	}
+    setBaseLevel(0);
+	setMaxLevel(0);
+
     return this;
 }
 
